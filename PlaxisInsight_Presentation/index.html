@@ -185,8 +185,16 @@
 
     /* Demo slide */
     .slide-demo {
-      background: var(--dark-teal);
+      background: #fff;
       color: var(--off-white);
+    }
+    .slide-demo .demo-card {
+      background: var(--dark-teal);
+      border-radius: 12px;
+      padding: 1.5em 2em;
+      display: inline-block;
+      width: 100%;
+      box-sizing: border-box;
     }
     .slide-demo h2 {
       color: #fff;
@@ -627,7 +635,7 @@
       <!-- METHODOLOGY: PARSING -->
       <section class="slide-light" data-part="1" data-step="3">
         <h2>Methodology — Parsing Logic</h2>
-        <p style="font-size:0.82em; font-weight:700; margin-bottom:0.5em;">Rule-based pipeline — 11 ordered rules, first match wins per line:</p>
+        <p style="font-size:0.82em; font-weight:700; margin-bottom:0.5em;">Rule-based pipeline — 10 ordered rules, first match wins per line:</p>
         <div style="display:flex; gap:1.5em; font-size:0.72em; flex:1; align-items:flex-start;">
           <div style="flex:1;">
             <details class="expandable">
@@ -635,45 +643,41 @@
               <div class="expand-body"><p>Detects 6 block headers (Steady-state regime, Check convergence, Flow boundary conditions, Unsaturated behaviour, Freezing/thawing heat storage, Time step upscale validity). Once inside, a state machine per block type handles nested metrics, sub-modes, and YES/NO sentinel lines that close the block.</p></div>
             </details>
             <details class="expandable">
-              <summary>② Unknown-block mode</summary>
-              <div class="expand-body"><p>Captures indented lines under unrecognised headers using indent-depth hierarchy; supports nested children</p></div>
-            </details>
-            <details class="expandable">
-              <summary>③ Step size</summary>
+              <summary>② Step size</summary>
               <div class="expand-body"><p>Extracts current step size value with time unit detection (days/seconds/hours/minutes/years) and flags negative steps</p></div>
             </details>
             <details class="expandable">
-              <summary>④ Total iterations</summary>
+              <summary>③ Total iterations</summary>
               <div class="expand-body"><p>Parses "Total number of iterations in current step"</p></div>
             </details>
             <details class="expandable">
-              <summary>⑤ Plastic points</summary>
+              <summary>④ Plastic points</summary>
               <div class="expand-body"><p>Detects family headers ("Soil plastic points", "Interface plastic points", etc. — 7 families) and captures Total / Inaccurate / Total tension / Inaccurate tension counts per family.</p></div>
             </details>
             <details class="expandable">
-              <summary>⑥ Converged attempt</summary>
+              <summary>⑤ Converged attempt</summary>
               <div class="expand-body"><p>Captures YES/NO from "Converged attempt" line</p></div>
             </details>
           </div>
           <div style="flex:1;">
             <details class="expandable">
-              <summary>⑦ Inaccurate soil elastic points</summary>
+              <summary>⑥ Inaccurate soil elastic points</summary>
               <div class="expand-body"><p>Standalone scalar outside plastic-points families</p></div>
             </details>
             <details class="expandable">
-              <summary>⑧ Rescaling reason</summary>
+              <summary>⑦ Rescaling reason</summary>
               <div class="expand-body"><p>Forward-pairs a reason line (e.g. "Diverging solution") with the next numeric "Rescaling: step size scale factor" line</p></div>
             </details>
             <details class="expandable">
-              <summary>⑨ Unknown block start</summary>
-              <div class="expand-body"><p>Non-indented unrecognised text starts a new unknown block for future indented children</p></div>
+              <summary>⑧ Unknown block handling</summary>
+              <div class="expand-body"><p>Non-indented unrecognised text starts a new unknown block. Subsequent indented lines are captured as nested children using indent-depth hierarchy.</p></div>
             </details>
             <details class="expandable">
-              <summary>⑩ Standalone YES/NO</summary>
+              <summary>⑨ Standalone YES/NO</summary>
               <div class="expand-body"><p>Captures isolated status flag lines not inside any block</p></div>
             </details>
             <details class="expandable">
-              <summary>⑪ Generic trailing metric</summary>
+              <summary>⑩ Generic trailing metric</summary>
               <div class="expand-body"><p>Catch-all: any remaining "label  value" line is stored as a named metric</p></div>
             </details>
           </div>
@@ -689,6 +693,7 @@
 
       <!-- Demo 1 -->
       <section class="slide-demo" data-part="1" data-step="4">
+        <div class="demo-card">
         <h2>Demo 1 — Data Ingestion &amp; Basic Features</h2>
         <p class="demo-subtitle">Select, Paste, Export, Import</p>
         <div class="accent-bar"></div>
@@ -699,10 +704,12 @@
           <li>▸ Import it back — verify round-trip fidelity</li>
         </ul>
         <div class="demo-badge">LIVE DEMO</div>
+        </div>
       </section>
 
       <!-- Demo 2 -->
       <section class="slide-demo" data-part="1" data-step="4">
+        <div class="demo-card">
         <h2>Demo 2 — Overview Dashboard &amp; Step Detail</h2>
         <p class="demo-subtitle">Overview, Custom Plots, Step Detail</p>
         <div class="accent-bar"></div>
@@ -716,10 +723,12 @@
           <li>▸ Column filter popover, fullscreen mode, step summary with extrema</li>
         </ul>
         <div class="demo-badge">LIVE DEMO</div>
+        </div>
       </section>
 
       <!-- Demo 3 -->
       <section class="slide-demo" data-part="1" data-step="4">
+        <div class="demo-card">
         <h2>Demo 3 — Multi-Log Comparison</h2>
         <p class="demo-subtitle">Side-by-side analysis comparison</p>
         <div class="accent-bar"></div>
@@ -731,6 +740,7 @@
           <li>▸ Toggle files on/off for selective comparison</li>
         </ul>
         <div class="demo-badge">LIVE DEMO</div>
+        </div>
       </section>
 
       <!-- ════════════════════════════════════════════════════════════ -->
@@ -803,6 +813,7 @@
 
       <!-- Demo 4 -->
       <section class="slide-demo" data-part="2" data-step="7">
+        <div class="demo-card">
         <h2>Demo 4 — Live Tracking</h2>
         <p class="demo-subtitle">Real-time convergence monitoring</p>
         <div class="accent-bar"></div>
@@ -814,6 +825,7 @@
           <li>▸ Stop tracking an individual phase while others continue</li>
         </ul>
         <div class="demo-badge">LIVE DEMO</div>
+        </div>
       </section>
 
       <!-- ════════════════════════════════════════════════════════════ -->
@@ -910,7 +922,7 @@
 
       outlineNav.classList.remove('hidden');
       var items = part === '1' ? part1Items : part2Items;
-      var isDark = slide.classList.contains('slide-dark') || slide.classList.contains('slide-demo');
+      var isDark = slide.classList.contains('slide-dark');
 
       outlineNav.classList.toggle('on-dark', isDark);
 
