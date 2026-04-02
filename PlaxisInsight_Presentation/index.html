@@ -374,6 +374,77 @@
     #outline-nav.on-dark .nav-sep {
       color: rgba(255,255,255,0.2);
     }
+
+    /* Skeleton modal */
+    #skeleton-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 999;
+      background: rgba(0, 29, 34, 0.92);
+      backdrop-filter: blur(6px);
+      justify-content: center;
+      align-items: center;
+    }
+    #skeleton-modal.visible {
+      display: flex;
+    }
+    #skeleton-modal .modal-content {
+      background: #0d1f23;
+      border: 1px solid var(--teal);
+      border-radius: 12px;
+      width: 88%;
+      max-height: 82vh;
+      overflow-y: auto;
+      padding: 2em 2.5em;
+      position: relative;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    }
+    #skeleton-modal .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1em;
+      border-bottom: 2px solid var(--teal);
+      padding-bottom: 0.5em;
+    }
+    #skeleton-modal .modal-header h3 {
+      color: var(--accent-green);
+      font-family: 'Inter', sans-serif;
+      font-size: 1.1em;
+      margin: 0;
+    }
+    #skeleton-modal .modal-close {
+      background: none;
+      border: 1px solid rgba(255,255,255,0.2);
+      color: #fff;
+      font-size: 1.2em;
+      cursor: pointer;
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+    }
+    #skeleton-modal .modal-close:hover {
+      background: rgba(255,255,255,0.1);
+    }
+    #skeleton-modal pre {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      line-height: 1.55;
+      color: #c8d6d9;
+      white-space: pre;
+      margin: 0;
+      tab-size: 3;
+    }
+    #skeleton-modal .sk-header { color: var(--accent-green); font-weight: 700; }
+    #skeleton-modal .sk-branch { color: #4a7a80; }
+    #skeleton-modal .sk-label { color: #e0e0e0; }
+    #skeleton-modal .sk-value { color: #f0c674; font-style: italic; }
+    #skeleton-modal .sk-comment { color: #6a9955; font-style: italic; }
   </style>
 </head>
 <body>
@@ -536,9 +607,9 @@
           </div>
           <div class="col col-dark">
             <h3>THE CHALLENGE</h3>
-            <ul>
+            <ul class="no-bullets">
               <li>Field presence depends on <span class="bold">three factors</span>:</li>
-              <li><span class="bold" style="color:var(--accent-green);">① Calculation type</span> <span style="opacity:0.6;">(16 types)</span></li>
+              <li><span class="bold" style="color:var(--accent-green);">① Calculation type</span></li>
               <li style="opacity:0.6;">Plastic → no flow/thermal fields; THM → all fields; Safety → strength reduction, no time unit</li>
               <li><span class="bold" style="color:var(--accent-green);">② Element types in model</span></li>
               <li style="opacity:0.6;">Interface, geogrid, anchor, plate, beam, embedded beam, flex. hinge — absent element = absent fields</li>
@@ -556,21 +627,60 @@
       <!-- METHODOLOGY: PARSING -->
       <section class="slide-light" data-part="1" data-step="3">
         <h2>Methodology — Parsing Logic</h2>
-        <ul>
-          <li class="bold">Rule-based pipeline — 13 ordered rules, first match wins per line:</li>
-          <li class="sub">① Start known block (Steady-state, Check convergence, Flow BC, Unsaturated, Freeze/thaw, Time step upscale)</li>
-          <li class="sub">② Known-block mode — state machine per block type with sub-modes and sentinels</li>
-          <li class="sub">③ Unknown-block mode — indent-based hierarchy for unrecognised patterns</li>
-          <li class="sub">④ Step size — extraction with time unit + negative detection</li>
-          <li class="sub">⑤ Total iterations &nbsp;|&nbsp; ⑥ Plastic points header &nbsp;|&nbsp; ⑦ Plastic points rows</li>
-          <li class="sub">⑧ Converged attempt (YES/NO) &nbsp;|&nbsp; ⑨ Inaccurate soil elastic points</li>
-          <li class="sub">⑩ Rescaling reason — forward-paired with next numeric factor</li>
-          <li class="sub">⑪ Unknown block start &nbsp;|&nbsp; ⑫ Standalone YES/NO &nbsp;|&nbsp; ⑬ Generic trailing metric</li>
-          <li class="bold" style="margin-top:0.6em;">Documented structures (in Notes/):</li>
-          <li class="sub">StepBlock_Structure.txt — complete field tree with format specs</li>
-          <li class="sub">CalcType_ConveCri_StepOpt_Rules.txt — criteria hierarchy for all 16 calc types</li>
-          <li class="sub">Phase_Summary_Structure.txt — all phase-end messages</li>
-        </ul>
+        <p style="font-size:0.82em; font-weight:700; margin-bottom:0.5em;">Rule-based pipeline — 11 ordered rules, first match wins per line:</p>
+        <div style="display:flex; gap:1.5em; font-size:0.72em; flex:1; align-items:flex-start;">
+          <div style="flex:1;">
+            <details class="expandable">
+              <summary>① Known block detection &amp; parsing</summary>
+              <div class="expand-body"><p>Detects 6 block headers (Steady-state regime, Check convergence, Flow boundary conditions, Unsaturated behaviour, Freezing/thawing heat storage, Time step upscale validity). Once inside, a state machine per block type handles nested metrics, sub-modes, and YES/NO sentinel lines that close the block.</p></div>
+            </details>
+            <details class="expandable">
+              <summary>② Unknown-block mode</summary>
+              <div class="expand-body"><p>Captures indented lines under unrecognised headers using indent-depth hierarchy; supports nested children</p></div>
+            </details>
+            <details class="expandable">
+              <summary>③ Step size</summary>
+              <div class="expand-body"><p>Extracts current step size value with time unit detection (days/seconds/hours/minutes/years) and flags negative steps</p></div>
+            </details>
+            <details class="expandable">
+              <summary>④ Total iterations</summary>
+              <div class="expand-body"><p>Parses "Total number of iterations in current step"</p></div>
+            </details>
+            <details class="expandable">
+              <summary>⑤ Plastic points</summary>
+              <div class="expand-body"><p>Detects family headers ("Soil plastic points", "Interface plastic points", etc. — 7 families) and captures Total / Inaccurate / Total tension / Inaccurate tension counts per family.</p></div>
+            </details>
+            <details class="expandable">
+              <summary>⑥ Converged attempt</summary>
+              <div class="expand-body"><p>Captures YES/NO from "Converged attempt" line</p></div>
+            </details>
+          </div>
+          <div style="flex:1;">
+            <details class="expandable">
+              <summary>⑦ Inaccurate soil elastic points</summary>
+              <div class="expand-body"><p>Standalone scalar outside plastic-points families</p></div>
+            </details>
+            <details class="expandable">
+              <summary>⑧ Rescaling reason</summary>
+              <div class="expand-body"><p>Forward-pairs a reason line (e.g. "Diverging solution") with the next numeric "Rescaling: step size scale factor" line</p></div>
+            </details>
+            <details class="expandable">
+              <summary>⑨ Unknown block start</summary>
+              <div class="expand-body"><p>Non-indented unrecognised text starts a new unknown block for future indented children</p></div>
+            </details>
+            <details class="expandable">
+              <summary>⑩ Standalone YES/NO</summary>
+              <div class="expand-body"><p>Captures isolated status flag lines not inside any block</p></div>
+            </details>
+            <details class="expandable">
+              <summary>⑪ Generic trailing metric</summary>
+              <div class="expand-body"><p>Catch-all: any remaining "label  value" line is stored as a named metric</p></div>
+            </details>
+          </div>
+        </div>
+        <div style="text-align:center; margin-top:0.5em;">
+          <button id="skeleton-btn" style="background:var(--teal); color:#fff; border:none; padding:0.4em 1.4em; border-radius:6px; font-family:'Inter',sans-serif; font-weight:600; font-size:0.7em; cursor:pointer; letter-spacing:0.03em; transition:background 0.2s;">View Complete Log Skeleton</button>
+        </div>
       </section>
 
       <!-- ════════════════════════════════════════════════════════════ -->
@@ -744,6 +854,17 @@
 
   <div id="outline-nav" class="hidden"></div>
 
+  <!-- Skeleton modal -->
+  <div id="skeleton-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>PLAXIS Convergence Log — Complete Skeleton</h3>
+        <button class="modal-close" title="Close">×</button>
+      </div>
+      <pre id="skeleton-pre"></pre>
+    </div>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script>
   <script>
     Reveal.initialize({
@@ -815,6 +936,279 @@
         }
       });
     });
+
+    // ── Skeleton modal ──
+    (function() {
+      var modal = document.getElementById('skeleton-modal');
+      var btn = document.getElementById('skeleton-btn');
+      var closeBtn = modal.querySelector('.modal-close');
+      var pre = document.getElementById('skeleton-pre');
+
+      var raw = `PART 1: HEADER (printed once)
+│
+├─ CALCULATION TYPE
+│  ├─ Plastic | Consolidation | Safety | Dynamics | Dynamics with consolidation
+│  ├─ Fully coupled | Fully coupled THM
+│  ├─ Transient GW flow | Steady state GW flow
+│  ├─ Transient heat flow | Steady state heat flow
+│  ├─ Transient heat and GW flow | Steady state heat and GW flow
+│  └─ Earth gradient | Earth gradient and GW flow
+│
+├─ CONVERGENCE CRITERIA
+│  ├─ Thermal
+│  │  ├─ Global heat flow error tolerance                          &lt;value&gt;
+│  │  ├─ Average temperature change error tolerance                &lt;value&gt;
+│  │  └─ Global heat storage variation tolerance                   &lt;value&gt;
+│  │
+│  ├─ GW flow / Coupled
+│  │  ├─ Global GW flow error tolerance                            &lt;value&gt;
+│  │  ├─ Steady state regime
+│  │  │  ├─ Local GW flow error tolerance                          &lt;value&gt;
+│  │  │  ├─ Average pore pressure change tolerance                 &lt;value&gt;
+│  │  │  ├─ Maximum pore pressure change tolerance                 &lt;value&gt;
+│  │  │  └─ Inaccurate pore pressure node tolerance                &lt;value&gt;
+│  │  ├─ Unsaturated behaviour
+│  │  │  ├─ Unsaturated behaviour tolerance                        &lt;value&gt;
+│  │  │  ├─ Excessive degree-of-sat threshold                      &lt;value&gt;
+│  │  │  └─ Excessive relative perm. threshold                     &lt;value&gt;
+│  │  └─ Boundary nodes status
+│  │     ├─ Inaccurate seepage node ratio tolerance                &lt;value&gt;
+│  │     ├─ Inaccurate ponding node ratio tolerance                &lt;value&gt;
+│  │     └─ Max. number of iter. for checking status change
+│  │        ├─ Seepage nodes                                       &lt;integer&gt;
+│  │        ├─ Drain nodes                                         &lt;integer&gt;
+│  │        ├─ Well nodes                                          &lt;integer&gt;
+│  │        └─ Ponding nodes                                       &lt;integer&gt;
+│  │
+│  └─ Mechanical / Deformation
+│     ├─ Global force error tolerance                              &lt;value&gt;
+│     ├─ Integrated soil local error tolerance                     &lt;value&gt;
+│     ├─ Global moment error tolerance                             &lt;value&gt;
+│     ├─ Soil accuracy
+│     │  ├─ Inaccurate soil plastic point tolerance                &lt;value&gt;
+│     │  └─ Inaccurate soil elastic point tolerance                &lt;value&gt;
+│     ├─ Interface / Discontinuity
+│     │  ├─ Integrated interface/discontinuity local error tol.    &lt;value&gt;
+│     │  └─ Inaccurate interface/discontinuity plastic point tol.  &lt;value&gt;
+│     ├─ Embedded beam/cable interface error tolerance              &lt;value&gt;
+│     ├─ Structural elements
+│     │  ├─ Inaccurate plate plastic point tolerance               &lt;value&gt;
+│     │  └─ Inaccurate beam plastic point tolerance                &lt;value&gt;
+│     ├─ Geogrid
+│     │  ├─ Integrated geogrid local error tolerance               &lt;value&gt;
+│     │  └─ Inaccurate geogrid plastic point tolerance             &lt;value&gt;
+│     └─ Anchor
+│        ├─ Integrated anchor local error tolerance                &lt;value&gt;
+│        └─ Inaccurate plastic anchor tolerance                    &lt;value&gt;
+│
+└─ STEP SIZE CONTROL PARAMETERS
+   ├─ Maximum iterations per step                                  &lt;integer&gt;
+   ├─ Desired minimum iterations per step                          &lt;integer&gt;
+   ├─ Desired maximum iterations per step                          &lt;integer&gt;
+   ├─ Maximum consecutive negative steps                           &lt;integer&gt;
+   ├─ Arc-length control                                           &lt;Off|On|Auto&gt;
+   └─ Updated mesh                                                 &lt;Off|On|Auto&gt;
+
+
+PART 2: STEPS (repeated per step)
+│
+├─ ═══════════════════════════════════════════════
+│  STEP &lt;N&gt;  |  ADDITIONAL STEP FOR TARGET MSF
+│  ═══════════════════════════════════════════════
+│
+├─ ITERATION BLOCK (repeated per iteration/attempt/sub-step)
+│  │
+│  │  Header variants:
+│  │    STEP &lt;N&gt; - ATTEMPT &lt;A&gt; - ITERATION &lt;I&gt;
+│  │    STEP &lt;N&gt; - SUB-STEP &lt;S&gt; - ITERATION &lt;I&gt;
+│  │    STEP &lt;N&gt; - FINAL STRESS UPDATE
+│  │    ADDITIONAL STEP - ATTEMPT &lt;A&gt; - ITERATION &lt;I&gt;
+│  │
+│  ├─ Step size &amp; control
+│  │  ├─ Current step size &lt;tUnit&gt;                                 &lt;value&gt;
+│  │  ├─ Uncorrected strength reduction factor                     &lt;value&gt;
+│  │  ├─ Current strength reduction factor                         &lt;value&gt;
+│  │  ├─ Arc-length factor                                         &lt;value&gt;
+│  │  └─ Total number of iterations in current step                &lt;integer&gt;
+│  │
+│  ├─ Convergence errors
+│  │  ├─ Global force error                                        &lt;value&gt;
+│  │  ├─ Integrated soil local error                               &lt;value&gt;
+│  │  ├─ Integrated interface local error                          &lt;value&gt;
+│  │  ├─ Global moment error                                       &lt;value&gt;
+│  │  ├─ Embedded beam interface error                             &lt;value&gt;
+│  │  ├─ Integrated geogrid local error                            &lt;value&gt;
+│  │  ├─ Integrated anchor local error                             &lt;value&gt;
+│  │  ├─ Global GW flow error                                      &lt;value&gt;
+│  │  └─ Global heat flow error                                    &lt;value&gt;
+│  │
+│  ├─ STEADY STATE REGIME
+│  │  ├─ Updated global GW flow error                              &lt;value&gt;
+│  │  ├─ Local GW flow error                                       &lt;value&gt;
+│  │  ├─ Average pore pressure change                              &lt;value&gt;
+│  │  ├─ Maximum pore pressure change                              &lt;value&gt;
+│  │  ├─ Average relative perm. change                             &lt;value&gt;
+│  │  ├─ Average degree-of-saturation change                       &lt;value&gt;
+│  │  ├─ Check steady state / Check steady state regime
+│  │  │  ├─ [&lt;message&gt;]
+│  │  │  └─ Steady state GW flow regime reached                    &lt;YES|NO&gt;
+│  │  ├─ Global heat flow error                                    &lt;value&gt;
+│  │  ├─ Global temperature change error                           &lt;value&gt;
+│  │  └─ Check steady state
+│  │     ├─ [&lt;message&gt;]
+│  │     └─ Steady state heat flow regime reached                  &lt;YES|NO&gt;
+│  │
+│  ├─ Time step upscale validity
+│  │  ├─ Average relative perm. change                             &lt;value&gt;
+│  │  ├─ Average degree-of-sat. change                             &lt;value&gt;
+│  │  └─ Check variation in unsaturated zone
+│  │     ├─ [&lt;message&gt;]
+│  │     └─ Upscaling step size confirmed                          &lt;YES|NO&gt;
+│  │
+│  ├─ Check convergence
+│  │  ├─ [&lt;message&gt;]
+│  │  └─ Converged attempt                                         &lt;YES|NO&gt;
+│  │
+│  ├─ Flow boundary condition changes
+│  │  ├─ BC status iteration number                                &lt;integer&gt;
+│  │  ├─ Number of inaccurate seepage nodes                        &lt;integer&gt;
+│  │  ├─ Number of inaccurate drain nodes                          &lt;integer&gt;
+│  │  ├─ Number of inaccurate well nodes                           &lt;integer&gt;
+│  │  ├─ Number of inaccurate ponding nodes                        &lt;integer&gt;
+│  │  └─ Check boundary conditions status
+│  │     ├─ [&lt;message&gt;]
+│  │     └─ Valid boundary conditions status                        &lt;YES|NO&gt;
+│  │
+│  ├─ Unsaturated behaviour monitoring
+│  │  ├─ Average relative perm. change                             &lt;value&gt;
+│  │  ├─ Average degree-of-sat. change                             &lt;value&gt;
+│  │  └─ Check variation in unsaturated zone
+│  │     ├─ [&lt;message&gt;]
+│  │     └─ Valid converged attempt                                 &lt;YES|NO&gt;
+│  │
+│  ├─ Freezing/thawing induced heat storage change
+│  │  ├─ Global heat storage variation                             &lt;value&gt;
+│  │  ├─ [&lt;message&gt;]
+│  │  └─ Acceptable heat storage variation                         &lt;YES|NO&gt;
+│  │
+│  ├─ Rescaling events
+│  │  ├─ &lt;reason&gt;                              (7 known reasons)
+│  │  │    Rescaling: step size scale factor                        &lt;value&gt;
+│  │  │  Reasons: Diverging solution | Close to ultimate level
+│  │  │           Reached desired maximum number of iterations
+│  │  │           Number of iterations below desired minimum
+│  │  │           Scaling step size to reach ultimate level
+│  │  │           Thermal scale down
+│  │  │           Excessive change of relative perm. or degree of sat.
+│  │
+│  ├─ Plastic points (7 families × up to 4 rows)
+│  │  ├─ Soil plastic points
+│  │  │  ├─ Total / Inaccurate / Total tension / Inaccurate tension
+│  │  ├─ Interface plastic points
+│  │  │  ├─ Total / Inaccurate / Total tension / Inaccurate tension
+│  │  ├─ Plate plastic points
+│  │  │  ├─ Total / Inaccurate
+│  │  ├─ Beam plastic points
+│  │  │  ├─ Total / Inaccurate
+│  │  ├─ Geogrid plastic points
+│  │  │  ├─ Total / Inaccurate
+│  │  ├─ Anchor plastic points
+│  │  │  ├─ Total / Inaccurate
+│  │  └─ Flexible hinge plastic points
+│  │     ├─ Total / Inaccurate
+│  │
+│  └─ Inaccurate soil elastic points                               &lt;integer&gt;
+│
+├─ STEP SUMMARY
+│  │
+│  │  Header variants:
+│  │    STEP &lt;N&gt; - SUMMARY
+│  │    STEP &lt;N&gt; - SUB-STEP &lt;S&gt; - SUMMARY
+│  │    ADDITIONAL STEP - SUMMARY
+│  │
+│  ├─ Reached value
+│  │  ├─ Reached sum-MStage                                        &lt;value&gt;
+│  │  ├─ Reached time &lt;tUnit&gt;                                      &lt;value&gt;
+│  │  └─ Reached sum-MSF                                           &lt;value&gt;
+│  │
+│  ├─ Step convergence achieved                                    &lt;YES|NO&gt;
+│  ├─ Relative stiffness                                           &lt;value&gt;
+│  │
+│  ├─ Steady state GW flow regime reached                          &lt;YES|NO&gt;
+│  ├─ Steady state heat flow regime reached                        &lt;YES|NO&gt;
+│  │
+│  ├─ Average relative perm. change                                &lt;value&gt;
+│  ├─ Average degree-of-saturation change                          &lt;value&gt;
+│  │
+│  ├─ Maximum degree-of-consolidation                              &lt;value&gt;
+│  │
+│  └─ Extrema with locations
+│     ├─ Maximum pore pressure change              &lt;value&gt;  → At node &lt;id&gt;, Location(x,y,z)
+│     ├─ Maximum relative permeability change      &lt;value&gt;  → At stress point &lt;id&gt;, Location(x,y,z)
+│     ├─ Maximum degree-of-saturation change       &lt;value&gt;  → At stress point &lt;id&gt;, Location(x,y,z)
+│     ├─ Maximum temperature change                &lt;value&gt;  → At node &lt;id&gt;, Location(x,y,z)
+│     ├─ Maximum excess pore pressure              &lt;value&gt;  → At stress point &lt;id&gt;, Location(x,y,z)
+│     ├─ Maximum out-of-balance force              &lt;value&gt;  → At node &lt;id&gt;, dof &lt;d&gt;, Location(x,y,z)
+│     └─ Maximum incremental displacement          &lt;value&gt;  → At node &lt;id&gt;, dof &lt;d&gt;, Location(x,y,z)
+│
+│  ... next STEP ...
+
+
+PART 3: PHASE SUMMARY (printed once at end)
+│
+├─ ═══════════════════════════════════════════════
+│  ═══════════════════════════════════════════════
+│  PHASE SUMMARY
+│  ═══════════════════════════════════════════════
+│  ═══════════════════════════════════════════════
+│
+└─ &lt;outcome message&gt;
+   └─ &lt;detail message&gt;
+
+   Outcome messages:
+     Prescribed ultimate state reached
+     Steady state regime reached
+     Transient flow end time reached
+     Prescribed ultimate state not reached
+     Soil body collapses
+     Not enough load steps.
+     Calculation aborted
+     Load advancement procedure fails
+     Accuracy condition not reached
+     ERROR (&lt;N&gt;) IN PLAS: &lt;description&gt;
+     WARNING (&lt;N&gt;) IN PLAS: &lt;description&gt;
+
+   Detail messages:
+     Too many consecutive negative steps
+     Too many consecutive negative/very small steps
+     Nearly zero increment`;
+
+      function highlight(text) {
+        return text
+          .replace(/(PART [123]:.*)/g, '<span class="sk-header">$1</span>')
+          .replace(/(├─|└─|│)/g, '<span class="sk-branch">$1</span>')
+          .replace(/(&lt;[^&]*&gt;)/g, '<span class="sk-value">$1</span>')
+          .replace(/(→[^\n]*)/g, '<span class="sk-comment">$1</span>');
+      }
+
+      pre.innerHTML = highlight(raw);
+
+      btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        modal.classList.add('visible');
+      });
+      closeBtn.addEventListener('click', function() {
+        modal.classList.remove('visible');
+      });
+      modal.addEventListener('click', function(e) {
+        if (e.target === modal) modal.classList.remove('visible');
+      });
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && modal.classList.contains('visible')) {
+          modal.classList.remove('visible');
+        }
+      });
+    })();
   </script>
 </body>
 </html>
