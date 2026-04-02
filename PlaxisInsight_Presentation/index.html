@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PlaxisInsight — Introduction</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%232563eb'/><text x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' fill='white' font-family='Inter,sans-serif' font-weight='700' font-size='14'>PI</text></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/theme/white.min.css" id="theme" />
+  <style>
+    :root {
+      --teal: #00505C;
+      --dark-teal: #003D47;
+      --accent-green: #27AE60;
+      --accent-red: #C0392B;
+      --accent-blue: #2980B9;
+      --off-white: #F2F2F2;
+      --charcoal: #333;
+      --mid-grey: #6B6B6B;
+      --light-grey: #959595;
+    }
+
+    .reveal {
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 28px;
+    }
+    .reveal .slides { text-align: left; }
+    .reveal .slides section {
+      height: 100%;
+      box-sizing: border-box;
+      padding: 40px 50px;
+    }
+    body, .reveal { background: #fff; }
+    .reveal h1, .reveal h2, .reveal h3 {
+      font-family: 'Inter', system-ui, sans-serif;
+      font-weight: 700;
+      text-transform: none;
+      letter-spacing: -0.02em;
+    }
+    .reveal code, .reveal .mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* ── Slide Layouts ── */
+
+    /* Title slide */
+    .slide-title {
+      background: linear-gradient(135deg, var(--dark-teal) 0%, var(--teal) 100%);
+      display: flex !important;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+    .slide-title h1 {
+      color: #fff;
+      font-size: 2.6em;
+      margin-bottom: 0.15em;
+    }
+    .slide-title .subtitle {
+      color: var(--off-white);
+      font-size: 1.1em;
+      font-weight: 300;
+      margin-bottom: 1.5em;
+    }
+    .slide-title .author {
+      color: var(--light-grey);
+      font-size: 0.7em;
+    }
+
+    /* Section break */
+    .slide-section {
+      background: linear-gradient(135deg, var(--dark-teal) 0%, var(--teal) 100%);
+      display: flex !important;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+    .slide-section h2 {
+      color: #fff;
+      font-size: 2.4em;
+      line-height: 1.2;
+    }
+
+    /* Light content */
+    .slide-light {
+      background: #fff;
+      color: var(--charcoal);
+      display: flex !important;
+      flex-direction: column;
+    }
+    .slide-light h2 {
+      color: var(--teal);
+      font-size: 1.5em;
+      margin-bottom: 0.6em;
+      border-bottom: 3px solid var(--teal);
+      padding-bottom: 0.3em;
+    }
+    .slide-light ul { list-style: none; padding-left: 0; }
+    .slide-light ul li {
+      margin-bottom: 0.35em;
+      font-size: 0.82em;
+      line-height: 1.5;
+    }
+    .slide-light ul li::before {
+      content: '';
+      display: inline-block;
+      width: 6px; height: 6px;
+      background: var(--teal);
+      border-radius: 50%;
+      margin-right: 0.6em;
+      vertical-align: middle;
+    }
+    .slide-light .sub {
+      color: var(--mid-grey);
+      padding-left: 1.5em;
+      font-size: 0.92em;
+    }
+    .slide-light .sub::before { background: var(--light-grey); width: 5px; height: 5px; }
+
+    /* Dark content */
+    .slide-dark {
+      background: var(--dark-teal);
+      color: var(--off-white);
+    }
+    .slide-dark h2 {
+      color: #fff;
+      font-size: 1.5em;
+      margin-bottom: 0.6em;
+      border-bottom: 3px solid var(--accent-green);
+      padding-bottom: 0.3em;
+    }
+    .slide-dark ul { list-style: none; padding-left: 0; }
+    .slide-dark ul li {
+      margin-bottom: 0.35em;
+      font-size: 0.82em;
+      line-height: 1.5;
+    }
+    .slide-dark ul li::before {
+      content: '';
+      display: inline-block;
+      width: 6px; height: 6px;
+      background: var(--accent-green);
+      border-radius: 50%;
+      margin-right: 0.6em;
+      vertical-align: middle;
+    }
+    .slide-dark .sub { color: rgba(255,255,255,0.65); padding-left: 1.5em; font-size: 0.92em; }
+    .slide-dark .sub::before { background: rgba(255,255,255,0.4); }
+
+    /* Demo slide */
+    .slide-demo {
+      background: var(--dark-teal);
+      color: var(--off-white);
+    }
+    .slide-demo h2 {
+      color: #fff;
+      font-size: 1.4em;
+      margin-bottom: 0.2em;
+    }
+    .slide-demo .demo-subtitle {
+      color: var(--light-grey);
+      font-style: italic;
+      font-size: 0.75em;
+      margin-bottom: 0.8em;
+    }
+    .slide-demo .accent-bar {
+      width: 120px;
+      height: 3px;
+      background: var(--teal);
+      margin-bottom: 1em;
+    }
+    .slide-demo ul { list-style: none; padding-left: 0; }
+    .slide-demo ul li {
+      margin-bottom: 0.5em;
+      font-size: 0.82em;
+      line-height: 1.5;
+    }
+    .slide-demo .demo-badge {
+      display: inline-block;
+      background: var(--teal);
+      color: #fff;
+      padding: 0.4em 1.8em;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 0.9em;
+      letter-spacing: 0.08em;
+      margin-top: 1em;
+      text-align: center;
+    }
+
+    /* 3-Column split */
+    .columns-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 1.2em;
+      font-size: 0.72em;
+      flex: 1;
+      align-items: stretch;
+    }
+    .columns-3 .col {
+      padding: 1em 0.8em;
+      border-radius: 8px;
+    }
+    .columns-3 .col-dark {
+      background: var(--dark-teal);
+      color: #fff;
+    }
+    .columns-3 .col-light {
+      background: #f8f9fa;
+      color: var(--charcoal);
+    }
+    .columns-3 .col h3 {
+      font-size: 1.1em;
+      margin-bottom: 0.5em;
+      line-height: 1.3;
+    }
+    .columns-3 .col-dark h3 { color: #fff; }
+    .columns-3 .col-light h3 { color: var(--teal); }
+    .columns-3 .col ul { padding-left: 0; list-style: none; }
+    .columns-3 .col ul li {
+      margin-bottom: 0.3em;
+      line-height: 1.45;
+    }
+    .columns-3 .col ul li::before {
+      content: '';
+      display: inline-block;
+      width: 4px; height: 4px;
+      border-radius: 50%;
+      margin-right: 0.5em;
+      vertical-align: middle;
+    }
+    .columns-3 .col-dark ul li::before { background: var(--accent-green); }
+    .columns-3 .col-light ul li::before { background: var(--teal); }
+    .col .label { font-weight: 700; }
+    .col .dim { color: var(--mid-grey); }
+    .col-dark .dim { color: rgba(255,255,255,0.6); }
+
+    /* Summary check items */
+    .check-list { list-style: none; padding-left: 0; }
+    .check-list li { margin-bottom: 0.4em; font-size: 0.82em; }
+    .check-list li::before { display: none; }
+    .check-mark { color: var(--accent-green); font-weight: 700; margin-right: 0.3em; }
+    .check-verb { font-weight: 700; color: #fff; }
+
+    /* Questions */
+    .slide-questions {
+      background: linear-gradient(135deg, var(--dark-teal) 0%, var(--teal) 100%);
+      display: flex !important;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+    .slide-questions h2 { color: #fff; font-size: 3em; }
+    .slide-questions .accent-bar {
+      width: 150px; height: 4px;
+      background: var(--accent-green);
+      margin-top: 0.8em;
+    }
+
+    /* Footer bar */
+    .reveal .slide-number {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--light-grey);
+    }
+
+    /* Emphasis helpers */
+    .text-teal { color: var(--teal); }
+    .text-green { color: var(--accent-green); }
+    .text-blue { color: var(--accent-blue); }
+    .text-red { color: var(--accent-red); }
+    .text-white { color: #fff; }
+    .text-dim { color: var(--mid-grey); }
+    .italic { font-style: italic; }
+    .bold { font-weight: 700; }
+    .small { font-size: 0.85em; }
+
+    /* Slide background overrides */
+    .reveal .slides section[data-background-color] { color: inherit; }
+
+    /* Split layout (2 columns) */
+    .split-title {
+      color: var(--teal);
+      font-size: 1.5em !important;
+      margin-bottom: 0.6em !important;
+      border-bottom: 3px solid var(--teal);
+      padding-bottom: 0.3em;
+    }
+  </style>
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+      <!-- ════════════════════════════════════════════════════════════ -->
+      <!-- TITLE SLIDE                                                 -->
+      <!-- ════════════════════════════════════════════════════════════ -->
+      <section class="slide-title">
+        <h1>PlaxisInsight</h1>
+        <p class="subtitle">Convergence Log Analysis for PLAXIS 2D/3D</p>
+        <p class="author">Hilmi Bayraktaroglu</p>
+      </section>
+
+      <!-- ════════════════════════════════════════════════════════════ -->
+      <!-- AGENDA                                                      -->
+      <!-- ════════════════════════════════════════════════════════════ -->
+      <section class="slide-light">
+        <h2>Outline</h2>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2em; flex: 1; font-size: 0.72em;">
+          <div class="col col-light" style="background: #f8f9fa; padding: 1.2em; border-radius: 8px; border-left: 4px solid var(--teal);">
+            <h3 style="color: var(--teal);">Part 1 — Introduction &amp; Usage</h3>
+            <ul>
+              <li>❶ Problem description</li>
+              <li class="dim">&nbsp;&nbsp;&nbsp;&nbsp;Who needs this and why</li>
+              <li>❷ Aim &amp; scope</li>
+              <li class="dim">&nbsp;&nbsp;&nbsp;&nbsp;Origin story and vision</li>
+              <li>❸ Challenges &amp; methodology</li>
+              <li class="dim">&nbsp;&nbsp;&nbsp;&nbsp;Log structure, parsing pipeline</li>
+              <li>❹ Live demos ×3</li>
+              <li class="dim">&nbsp;&nbsp;&nbsp;&nbsp;Basic features, dashboard, comparison</li>
+            </ul>
+          </div>
+          <div class="col col-light" style="background: #f8f9fa; padding: 1.2em; border-radius: 8px; border-left: 4px solid var(--teal);">
+            <h3 style="color: var(--teal);">Part 2 — Dev &amp; Maintainability</h3>
+            <ul>
+              <li>❺ Repository &amp; branching</li>
+              <li class="dim">&nbsp;&nbsp;&nbsp;&nbsp;GitHub, main vs development</li>
+              <li>❻ Test infrastructure</li>
+              <li class="dim">&nbsp;&nbsp;&nbsp;&nbsp;22+ regression baselines</li>
+              <li>❼ Live tracking feature</li>
+              <li class="dim">&nbsp;&nbsp;&nbsp;&nbsp;Real-time monitoring demo</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- ════════════════════════════════════════════════════════════ -->
+      <!-- SECTION 1: INTRODUCTION & USAGE                             -->
+      <!-- ════════════════════════════════════════════════════════════ -->
+      <section class="slide-section">
+        <h2>Introduction<br/>&amp; Usage</h2>
+        <p style="color: rgba(255,255,255,0.65); font-size: 0.55em; font-style: italic; margin-top: 0.8em; font-weight: 300;">Problem, motivation, log file structure, parsing methodology and live demos</p>
+      </section>
+
+      <!-- PROBLEM DESCRIPTION (3-col) -->
+      <section class="slide-light">
+        <h2>Problem Description</h2>
+        <div class="columns-3">
+          <div class="col col-dark">
+            <h3>WHAT IS A<br/>CONVERGENCE LOG?</h3>
+            <ul>
+              <li>Every PLAXIS phase writes convergence log files (<span class="mono small">data.convd.rr#</span>, <span class="mono small">data.convf.rr#</span>)</li>
+              <li>It records the complete solver history: steps, iterations, errors, plastic points, rescaling and the phase summary.</li>
+            </ul>
+          </div>
+          <div class="col col-light">
+            <h3>The Pain</h3>
+            <ul>
+              <li>Raw Fortran-formatted text</li>
+              <li>Thousands of lines, encrypted structure</li>
+              <li>Format varies by analysis type (coupled, dynamic, safety, …)</li>
+              <li>Fields depend on element types (interface, geogrid, anchor, …)</li>
+              <li>Comparing runs = scrolling two text files side by side</li>
+              <li>No plots, no trends, no KPIs</li>
+            </ul>
+          </div>
+          <div class="col col-light">
+            <h3>Who Suffers?</h3>
+            <ul>
+              <li>Most users don't know these files exist</li>
+              <li>Those aware find them overwhelming and avoid them</li>
+              <li><span class="bold">Primary consumers:</span></li>
+              <li>CCG team — Investigating calculation kernel</li>
+              <li>Support team — Troubleshooting user projects</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- AIM & SCOPE -->
+      <section class="slide-light">
+        <h2>Aim &amp; Scope — Origin Story</h2>
+        <ul>
+          <li>I was investigating kernel options affecting convergence speed in projects with discontinuity elements</li>
+          <li>Metrics I used: CPU/wall time, step count, iteration count — but the log contains far more</li>
+          <li class="bold" style="margin-top:0.6em;">Beyond the basics — hidden in the log:</li>
+          <li class="sub">Convergence error trends per iteration</li>
+          <li class="sub">Plastic point evolution across steps (7 families × 4 row types)</li>
+          <li class="sub">Rescaling events: frequency, reasons, scale factors</li>
+          <li class="sub">Steady-state regime checks, extrema with node coordinates</li>
+          <li class="sub">Step size evolution, arc-length factors, relative stiffness</li>
+          <li class="italic" style="margin-top:0.6em;">The spark: comparing two runs with different options was nearly impossible without tooling.</li>
+          <li class="bold text-teal" style="margin-top:0.6em; font-size:0.9em;">PlaxisInsight — parse, visualise and compare convergence log files in a smart and efficient way.</li>
+        </ul>
+      </section>
+
+      <!-- CHALLENGES: LOG STRUCTURE (3-col) -->
+      <section class="slide-light">
+        <h2>Challenges — Log File Structure</h2>
+        <div class="columns-3">
+          <div class="col col-dark">
+            <h3>PART 1: HEADER<br/>Solver Settings</h3>
+            <ul>
+              <li><span class="bold">CONVERGENCE CRITERIA</span></li>
+              <li>Thermal tolerances</li>
+              <li>GW flow / coupled criteria</li>
+              <li class="dim">&nbsp;&nbsp;Steady-state regime</li>
+              <li class="dim">&nbsp;&nbsp;Unsaturated behaviour</li>
+              <li class="dim">&nbsp;&nbsp;Boundary node status</li>
+              <li>Mechanical / deformation</li>
+              <li class="dim">&nbsp;&nbsp;Force, soil, moment error</li>
+              <li class="dim">&nbsp;&nbsp;Interface, beam, geogrid, anchor tolerances</li>
+            </ul>
+          </div>
+          <div class="col col-light">
+            <h3>PART 2: STEP BLOCKS<br/>Solver History</h3>
+            <ul>
+              <li><span class="bold">Per-iteration data:</span></li>
+              <li>Step size (with time unit)</li>
+              <li>9 convergence error fields</li>
+              <li>Plastic pts: 7 families × 4 rows</li>
+              <li>Rescaling: factor + reason</li>
+              <li>6 known block types</li>
+              <li><span class="bold">Step summary:</span></li>
+              <li>Converged YES/NO, ΣMStage/time</li>
+              <li>Stiffness, extrema with locations</li>
+            </ul>
+          </div>
+          <div class="col col-light">
+            <h3>THE CHALLENGE</h3>
+            <ul>
+              <li>Field presence varies by:</li>
+              <li><span class="bold">Calculation type</span></li>
+              <li class="dim">16 types — Plastic, Consolidation, Safety, Dynamics, Fully coupled, THM, GW flow, Heat flow, …</li>
+              <li><span class="bold">Element types in model</span></li>
+              <li class="dim">Interface, geogrid, anchor, plate, beam, flex. hinge</li>
+              <li><span class="bold">Solver decisions</span></li>
+              <li class="dim">Rescaling, arc-length, sub-steps, attempts</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- METHODOLOGY: PARSING -->
+      <section class="slide-light">
+        <h2>Methodology — Parsing Logic</h2>
+        <ul>
+          <li class="bold">Rule-based pipeline — 13 ordered rules, first match wins per line:</li>
+          <li class="sub">① Start known block (Steady-state, Check convergence, Flow BC, Unsaturated, Freeze/thaw, Time step upscale)</li>
+          <li class="sub">② Known-block mode — state machine per block type with sub-modes and sentinels</li>
+          <li class="sub">③ Unknown-block mode — indent-based hierarchy for unrecognised patterns</li>
+          <li class="sub">④ Step size — extraction with time unit + negative detection</li>
+          <li class="sub">⑤ Total iterations &nbsp;|&nbsp; ⑥ Plastic points header &nbsp;|&nbsp; ⑦ Plastic points rows</li>
+          <li class="sub">⑧ Converged attempt (YES/NO) &nbsp;|&nbsp; ⑨ Inaccurate soil elastic points</li>
+          <li class="sub">⑩ Rescaling reason — forward-paired with next numeric factor</li>
+          <li class="sub">⑪ Unknown block start &nbsp;|&nbsp; ⑫ Standalone YES/NO &nbsp;|&nbsp; ⑬ Generic trailing metric</li>
+          <li class="bold" style="margin-top:0.6em;">Documented structures (in Notes/):</li>
+          <li class="sub">StepBlock_Structure.txt — complete field tree with format specs</li>
+          <li class="sub">CalcType_ConveCri_StepOpt_Rules.txt — criteria hierarchy for all 16 calc types</li>
+          <li class="sub">Phase_Summary_Structure.txt — all phase-end messages</li>
+        </ul>
+      </section>
+
+      <!-- ════════════════════════════════════════════════════════════ -->
+      <!-- DEMOS                                                       -->
+      <!-- ════════════════════════════════════════════════════════════ -->
+
+      <!-- Demo 1 -->
+      <section class="slide-demo">
+        <h2>Demo 1 — Data Ingestion &amp; Basic Features</h2>
+        <p class="demo-subtitle">Select, Paste, Export, Import</p>
+        <div class="accent-bar"></div>
+        <ul>
+          <li>▸ Load convergence log — drag &amp; drop, file picker, or .convd.rr# files</li>
+          <li>▸ Paste from clipboard — full log or partial snippet (auto-detected)</li>
+          <li>▸ Export analysis to JSON — lossless, includes custom plots</li>
+          <li>▸ Import it back — verify round-trip fidelity</li>
+        </ul>
+        <div class="demo-badge">LIVE DEMO</div>
+      </section>
+
+      <!-- Demo 2 -->
+      <section class="slide-demo">
+        <h2>Demo 2 — Overview Dashboard &amp; Step Detail</h2>
+        <p class="demo-subtitle">Overview, Custom Plots, Step Detail</p>
+        <div class="accent-bar"></div>
+        <ul>
+          <li>▸ 5 KPI cards: Status, Progress (ΣMStage / time / MSF), Model, Steps, Neg. Steps</li>
+          <li>▸ 6 interactive charts: stage progress, convergence error (log), step size, relative stiffness, inaccurate points, convergence rate</li>
+          <li>▸ Solver settings: Convergence Criteria + Step Size Control cards (with raw view)</li>
+          <li>▸ Custom plots: any metric vs. any metric, scatter or line, step or iteration level</li>
+          <li>▸ Step Inspector: step table with colour coding (red=failed, violet=negative)</li>
+          <li>▸ Expand step → iteration log with dynamic columns + tolerance colouring</li>
+          <li>▸ Column filter popover, fullscreen mode, step summary with extrema</li>
+        </ul>
+        <div class="demo-badge">LIVE DEMO</div>
+      </section>
+
+      <!-- Demo 3 -->
+      <section class="slide-demo">
+        <h2>Demo 3 — Multi-Log Comparison</h2>
+        <p class="demo-subtitle">Side-by-side analysis comparison</p>
+        <div class="accent-bar"></div>
+        <ul>
+          <li>▸ Load a second convergence log file</li>
+          <li>▸ Comparison summary table: status, steps, ΣMStage, iterations per file</li>
+          <li>▸ 6 overlay charts with colour-coded traces per file</li>
+          <li>▸ Create a custom comparison plot (e.g. convergence error vs. step)</li>
+          <li>▸ Toggle files on/off for selective comparison</li>
+        </ul>
+        <div class="demo-badge">LIVE DEMO</div>
+      </section>
+
+      <!-- ════════════════════════════════════════════════════════════ -->
+      <!-- SECTION 2: DEVELOPMENT & MAINTAINABILITY                    -->
+      <!-- ════════════════════════════════════════════════════════════ -->
+      <section class="slide-section">
+        <h2>Development &amp;<br/>Maintainability</h2>
+        <p style="color: rgba(255,255,255,0.65); font-size: 0.55em; font-style: italic; margin-top: 0.8em; font-weight: 300;">Repository, branching, test infrastructure and live tracking</p>
+      </section>
+
+      <!-- REPO, BRANCHING & TESTS (3-col) -->
+      <section class="slide-light">
+        <h2>Repository, Branching &amp; Tests</h2>
+        <div class="columns-3">
+          <div class="col col-dark">
+            <h3>TECH STACK</h3>
+            <ul>
+              <li>TypeScript + React</li>
+              <li>Vite (bundler)</li>
+              <li>Plotly.js (charts)</li>
+              <li>No back-end — runs entirely in the browser</li>
+              <li>Source code on <span class="bold">GitHub</span> (personal repository)</li>
+            </ul>
+          </div>
+          <div class="col col-light">
+            <h3>Branching</h3>
+            <ul>
+              <li><span class="bold">main</span></li>
+              <li class="dim">Stable, reviewed, demo-ready</li>
+              <li><span class="bold">development</span></li>
+              <li class="dim">Active WIP, new features, parser extensions</li>
+              <li><span class="bold">Feature branches</span></li>
+              <li class="dim">(e.g. live-track)</li>
+              <li class="dim">Merged → development → main after validation</li>
+            </ul>
+          </div>
+          <div class="col col-light">
+            <h3>Test Infrastructure</h3>
+            <ul>
+              <li><span class="bold">22+ regression baselines</span></li>
+              <li class="dim">Consolidation ×3, Fully coupled, Safety, Dynamics, Steady-state, Known blocks ×2, Rescaling ×4, Plastic points, Step summary</li>
+              <li><span class="bold">Test commands:</span></li>
+              <li class="mono dim">testcases:baseline</li>
+              <li class="mono dim">testcases:compare (exit 1 on Δ)</li>
+              <li class="mono dim">testcases:diff (structural JSON)</li>
+              <li class="mono dim">testcases:diff:web (HTML report)</li>
+              <li class="mono dim">testcases:export-import</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- LIVE TRACKING -->
+      <section class="slide-dark">
+        <h2>Live Tracking — Real-Time Monitoring</h2>
+        <ul>
+          <li class="bold text-white" style="font-size:0.9em;">Monitor a running PLAXIS calculation — parse the convergence log as it grows.</li>
+          <li class="bold" style="margin-top:0.6em;">Two modes:</li>
+          <li class="sub">Companion server (<span class="mono">live-server.ts</span> on localhost:9876) — reliable reads of files held open by PLAXIS, supports changing watched directory at runtime</li>
+          <li class="sub">File System Access API (browser-only fallback) — no server needed</li>
+          <li class="bold" style="margin-top:0.6em;">Capabilities:</li>
+          <li class="sub">Phase selector modal — scans for <span class="mono">data.convd.rr#</span> files, shows phase numbers &amp; sizes</li>
+          <li class="sub">Auto-detects newly appearing phases during calculation</li>
+          <li class="sub">Per-phase stop / resume — freeze individual phases while tracking others</li>
+          <li class="sub">Inactivity detection — warning after 15 s of no file changes</li>
+          <li class="sub">Content-length based change detection (OS metadata unreliable while PLAXIS holds file handles)</li>
+          <li class="sub">1.5 s polling interval — low overhead, real-time feel</li>
+        </ul>
+      </section>
+
+      <!-- Demo 4 -->
+      <section class="slide-demo">
+        <h2>Demo 4 — Live Tracking</h2>
+        <p class="demo-subtitle">Real-time convergence monitoring</p>
+        <div class="accent-bar"></div>
+        <ul>
+          <li>▸ Start the companion server</li>
+          <li>▸ Point to a PLAXIS project directory</li>
+          <li>▸ Select active phases to track</li>
+          <li>▸ Watch the dashboard update in real-time as PLAXIS calculates</li>
+          <li>▸ Stop tracking an individual phase while others continue</li>
+        </ul>
+        <div class="demo-badge">LIVE DEMO</div>
+      </section>
+
+      <!-- ════════════════════════════════════════════════════════════ -->
+      <!-- SUMMARY                                                     -->
+      <!-- ════════════════════════════════════════════════════════════ -->
+      <section class="slide-dark">
+        <h2>Summary</h2>
+        <p class="italic" style="font-size:0.85em; color: #fff; margin-bottom: 0.8em;">PlaxisInsight transforms raw convergence logs into an interactive diagnostic tool.</p>
+        <ul class="check-list">
+          <li><span class="check-mark">✓</span> <span class="check-verb">Parse</span> — all 16 PLAXIS calculation types automatically</li>
+          <li><span class="check-mark">✓</span> <span class="check-verb">Visualise</span> — convergence errors, stiffness, plastic points, rescaling — interactive charts</li>
+          <li><span class="check-mark">✓</span> <span class="check-verb">Compare</span> — multiple analyses with overlay charts and summary tables</li>
+          <li><span class="check-mark">✓</span> <span class="check-verb">Custom plots</span> — any metric vs. any metric, step or iteration resolution</li>
+          <li><span class="check-mark">✓</span> <span class="check-verb">Inspect</span> — every iteration — dynamic columns, tolerance colouring, fullscreen mode</li>
+          <li><span class="check-mark">✓</span> <span class="check-verb">Export / Import</span> — lossless JSON round-trip for sharing and archival</li>
+          <li><span class="check-mark">✓</span> <span class="check-verb">Live tracking</span> — real-time monitoring of running PLAXIS calculations</li>
+        </ul>
+        <p class="bold" style="margin-top:1em; color: var(--light-grey); font-size:0.78em;">Built for the CCG and Support teams — designed for any PLAXIS power user.</p>
+      </section>
+
+      <!-- QUESTIONS -->
+      <section class="slide-questions">
+        <h2>Questions?</h2>
+        <div class="accent-bar"></div>
+      </section>
+
+      <!-- END -->
+      <section class="slide-title">
+        <h1 style="font-size:2em;">Thank You</h1>
+        <p class="subtitle">
+          <a href="https://hbayraktaroglu.github.io/PlaxisInsight/" target="_blank" rel="noopener noreferrer" style="color: var(--accent-green); text-decoration: underline;">hbayraktaroglu.github.io/PlaxisInsight</a>
+        </p>
+        <p class="author">Hilmi Bayraktaroglu</p>
+      </section>
+
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script>
+  <script>
+    Reveal.initialize({
+      hash: true,
+      slideNumber: 'c/t',
+      width: 1280,
+      height: 720,
+      margin: 0.04,
+      transition: 'slide',
+      transitionSpeed: 'default',
+      controlsTutorial: false,
+      progress: true,
+      center: false,
+      keyboard: true,
+      overview: true,
+      disableLayout: false,
+    });
+  </script>
+</body>
+</html>
