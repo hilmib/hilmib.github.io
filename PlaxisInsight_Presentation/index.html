@@ -115,6 +115,37 @@
       margin-right: 0.6em;
       vertical-align: middle;
     }
+    .no-bullets li::before { display: none !important; }
+
+    /* Expandable details */
+    .expandable {
+      margin-bottom: 0.5em;
+    }
+    .expandable summary {
+      font-weight: 700;
+      font-size: 0.82em;
+      color: var(--teal);
+      cursor: pointer;
+      list-style: none;
+      padding: 0.3em 0;
+    }
+    .expandable summary::-webkit-details-marker { display: none; }
+    .expandable summary::before {
+      content: '▸ ';
+      color: var(--teal);
+    }
+    .expandable[open] summary::before {
+      content: '▾ ';
+    }
+    .expand-body {
+      font-size: 0.75em;
+      color: var(--mid-grey);
+      padding-left: 1em;
+      line-height: 1.5;
+    }
+    .expand-body p {
+      margin: 0.25em 0;
+    }
     .slide-light .sub {
       color: var(--mid-grey);
       padding-left: 1.5em;
@@ -263,11 +294,15 @@
       margin-top: 0.8em;
     }
 
-    /* Footer bar */
+    /* Slide number */
     .reveal .slide-number {
       font-family: 'JetBrains Mono', monospace;
       font-size: 12px;
-      color: var(--light-grey);
+      color: #000;
+      right: 16px;
+      top: 16px;
+      bottom: auto;
+      left: auto;
     }
 
     /* Emphasis helpers */
@@ -292,6 +327,53 @@
       border-bottom: 3px solid var(--teal);
       padding-bottom: 0.3em;
     }
+
+    /* Outline breadcrumb */
+    #outline-nav {
+      position: fixed;
+      bottom: 16px;
+      left: 24px;
+      z-index: 100;
+      display: flex;
+      gap: 0.6em;
+      font-size: 11px;
+      font-family: 'Inter', sans-serif;
+      transition: opacity 0.3s ease;
+    }
+    #outline-nav.hidden { opacity: 0; pointer-events: none; }
+    #outline-nav .nav-item {
+      color: var(--light-grey);
+      white-space: nowrap;
+      transition: color 0.2s ease;
+    }
+    #outline-nav .nav-item.active {
+      color: var(--teal);
+      font-weight: 600;
+    }
+    #outline-nav .nav-part {
+      color: var(--teal);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    #outline-nav .nav-sep {
+      color: var(--light-grey);
+      opacity: 0.4;
+    }
+    /* Dark slide variant */
+    #outline-nav.on-dark .nav-item {
+      color: rgba(255,255,255,0.35);
+    }
+    #outline-nav.on-dark .nav-item.active {
+      color: rgba(255,255,255,0.9);
+      font-weight: 600;
+    }
+    #outline-nav.on-dark .nav-part {
+      color: rgba(255,255,255,0.85);
+    }
+    #outline-nav.on-dark .nav-sep {
+      color: rgba(255,255,255,0.2);
+    }
   </style>
 </head>
 <body>
@@ -315,26 +397,26 @@
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2em; flex: 1; font-size: 0.72em;">
           <div class="col col-light" style="background: #f8f9fa; padding: 1.2em; border-radius: 8px; border-left: 4px solid var(--teal);">
             <h3 style="color: var(--teal);">Part 1 — Introduction &amp; Usage</h3>
-            <ul>
+            <ul style="list-style: none; padding-left: 0;" class="no-bullets">
               <li>❶ Problem description</li>
-              <li class="dim">&nbsp;&nbsp;&nbsp;&nbsp;Who needs this and why</li>
+              <li class="dim" style="padding-left: 1.6em;">Who needs this and why</li>
               <li>❷ Aim &amp; scope</li>
-              <li class="dim">&nbsp;&nbsp;&nbsp;&nbsp;Origin story and vision</li>
+              <li class="dim" style="padding-left: 1.6em;">Origin story and vision</li>
               <li>❸ Challenges &amp; methodology</li>
-              <li class="dim">&nbsp;&nbsp;&nbsp;&nbsp;Log structure, parsing pipeline</li>
+              <li class="dim" style="padding-left: 1.6em;">Log structure, parsing pipeline</li>
               <li>❹ Live demos ×3</li>
-              <li class="dim">&nbsp;&nbsp;&nbsp;&nbsp;Basic features, dashboard, comparison</li>
+              <li class="dim" style="padding-left: 1.6em;">Basic features, dashboard, comparison</li>
             </ul>
           </div>
           <div class="col col-light" style="background: #f8f9fa; padding: 1.2em; border-radius: 8px; border-left: 4px solid var(--teal);">
             <h3 style="color: var(--teal);">Part 2 — Dev &amp; Maintainability</h3>
-            <ul>
+            <ul style="list-style: none; padding-left: 0;" class="no-bullets">
               <li>❺ Repository &amp; branching</li>
-              <li class="dim">&nbsp;&nbsp;&nbsp;&nbsp;GitHub, main vs development</li>
+              <li class="dim" style="padding-left: 1.6em;">GitHub, main vs development</li>
               <li>❻ Test infrastructure</li>
-              <li class="dim">&nbsp;&nbsp;&nbsp;&nbsp;22+ regression baselines</li>
+              <li class="dim" style="padding-left: 1.6em;">22+ regression baselines</li>
               <li>❼ Live tracking feature</li>
-              <li class="dim">&nbsp;&nbsp;&nbsp;&nbsp;Real-time monitoring demo</li>
+              <li class="dim" style="padding-left: 1.6em;">Real-time monitoring demo</li>
             </ul>
           </div>
         </div>
@@ -349,7 +431,7 @@
       </section>
 
       <!-- PROBLEM DESCRIPTION (3-col) -->
-      <section class="slide-light">
+      <section class="slide-light" data-part="1" data-step="1">
         <h2>Problem Description</h2>
         <div class="columns-3">
           <div class="col col-dark">
@@ -384,7 +466,7 @@
       </section>
 
       <!-- AIM & SCOPE -->
-      <section class="slide-light">
+      <section class="slide-light" data-part="1" data-step="2">
         <h2>Aim &amp; Scope — Origin Story</h2>
         <ul>
           <li>I was investigating kernel options affecting convergence speed in projects with discontinuity elements</li>
@@ -401,54 +483,78 @@
       </section>
 
       <!-- CHALLENGES: LOG STRUCTURE (3-col) -->
-      <section class="slide-light">
+      <section class="slide-light" data-part="1" data-step="3">
         <h2>Challenges — Log File Structure</h2>
         <div class="columns-3">
+          <div class="col col-light">
+            <h3>PART 1:<br/>Solver Settings</h3>
+            <details class="expandable">
+              <summary>Convergence criteria</summary>
+              <div class="expand-body">
+                <p><strong>Thermal:</strong> heat flow error, temperature change error, heat storage variation tolerances</p>
+                <p><strong>GW flow / coupled:</strong> GW flow error tolerance, plus sub-groups for steady-state regime (local flow error, pore pressure change, relative permeability change, degree-of-saturation change), unsaturated behaviour thresholds, and boundary node status iteration limits (seepage, drain, well, ponding nodes)</p>
+                <p><strong>Mechanical / deformation:</strong> global force error, soil local error, moment error, soil accuracy (plastic &amp; elastic point tolerances), interface/discontinuity tolerances, embedded beam interface error, structural element tolerances (plate, beam), geogrid tolerances, anchor tolerances</p>
+              </div>
+            </details>
+            <details class="expandable">
+              <summary>Step size control parameters</summary>
+              <div class="expand-body">
+                <p>Max iterations per step, desired min/max iterations, max consecutive negative steps</p>
+                <p>Control flags: Arc-length control (Off/On/Auto), Updated mesh (Off/On/Auto)</p>
+              </div>
+            </details>
+          </div>
+          <div class="col col-light">
+            <h3>PART 2:<br/>Solver History</h3>
+            <details class="expandable">
+              <summary>Per-iteration data</summary>
+              <div class="expand-body">
+                <p><strong>Step size:</strong> with time unit label (e.g. "in days", "in seconds")</p>
+                <p><strong>Convergence errors:</strong> up to 9 fields (force, soil, interface, moment, embedded beam, geogrid, anchor, GW flow, heat flow)</p>
+                <p><strong>Plastic points:</strong> 7 element families (Soil, Interface, Plate, Beam, Geogrid, Anchor, Flexible hinge) × up to 4 rows (Total, Inaccurate, Total tension, Inaccurate tension)</p>
+                <p><strong>Inaccurate soil elastic points:</strong> standalone scalar</p>
+                <p><strong>Rescaling events:</strong> scale factor + reason (7 known reasons)</p>
+                <p><strong>6 known sub-blocks:</strong> Check convergence, Steady state regime, Flow boundary condition changes, Time step upscale validity, Unsaturated behaviour monitoring, Freezing/thawing heat storage change</p>
+                <p><strong>Iteration variants:</strong> Attempt / sub-step / final stress update headers</p>
+              </div>
+            </details>
+            <details class="expandable">
+              <summary>Step summary</summary>
+              <div class="expand-body">
+                <p><strong>Converged:</strong> YES / NO</p>
+                <p><strong>Reached value:</strong> sum-MStage, time, or sum-MSF (with time unit)</p>
+                <p><strong>Extrema:</strong> relative stiffness, max out-of-balance force, max incremental displacement (each with node ID, DOF, x, y, z)</p>
+                <p><strong>Optional flags:</strong> steady-state and unsaturated status</p>
+              </div>
+            </details>
+            <details class="expandable">
+              <summary>Phase summary</summary>
+              <div class="expand-body">
+                <p><strong>Outcome message:</strong> e.g. "Prescribed ultimate state reached", "Soil body collapses", "Calculation aborted"</p>
+              </div>
+            </details>
+          </div>
           <div class="col col-dark">
-            <h3>PART 1: HEADER<br/>Solver Settings</h3>
-            <ul>
-              <li><span class="bold">CONVERGENCE CRITERIA</span></li>
-              <li>Thermal tolerances</li>
-              <li>GW flow / coupled criteria</li>
-              <li class="dim">&nbsp;&nbsp;Steady-state regime</li>
-              <li class="dim">&nbsp;&nbsp;Unsaturated behaviour</li>
-              <li class="dim">&nbsp;&nbsp;Boundary node status</li>
-              <li>Mechanical / deformation</li>
-              <li class="dim">&nbsp;&nbsp;Force, soil, moment error</li>
-              <li class="dim">&nbsp;&nbsp;Interface, beam, geogrid, anchor tolerances</li>
-            </ul>
-          </div>
-          <div class="col col-light">
-            <h3>PART 2: STEP BLOCKS<br/>Solver History</h3>
-            <ul>
-              <li><span class="bold">Per-iteration data:</span></li>
-              <li>Step size (with time unit)</li>
-              <li>9 convergence error fields</li>
-              <li>Plastic pts: 7 families × 4 rows</li>
-              <li>Rescaling: factor + reason</li>
-              <li>6 known block types</li>
-              <li><span class="bold">Step summary:</span></li>
-              <li>Converged YES/NO, ΣMStage/time</li>
-              <li>Stiffness, extrema with locations</li>
-            </ul>
-          </div>
-          <div class="col col-light">
             <h3>THE CHALLENGE</h3>
             <ul>
-              <li>Field presence varies by:</li>
-              <li><span class="bold">Calculation type</span></li>
-              <li class="dim">16 types — Plastic, Consolidation, Safety, Dynamics, Fully coupled, THM, GW flow, Heat flow, …</li>
-              <li><span class="bold">Element types in model</span></li>
-              <li class="dim">Interface, geogrid, anchor, plate, beam, flex. hinge</li>
-              <li><span class="bold">Solver decisions</span></li>
-              <li class="dim">Rescaling, arc-length, sub-steps, attempts</li>
+              <li>Field presence depends on <span class="bold">three factors</span>:</li>
+              <li><span class="bold" style="color:var(--accent-green);">① Calculation type</span> <span style="opacity:0.6;">(16 types)</span></li>
+              <li style="opacity:0.6;">Plastic → no flow/thermal fields; THM → all fields; Safety → strength reduction, no time unit</li>
+              <li><span class="bold" style="color:var(--accent-green);">② Element types in model</span></li>
+              <li style="opacity:0.6;">Interface, geogrid, anchor, plate, beam, embedded beam, flex. hinge — absent element = absent fields</li>
+              <li><span class="bold" style="color:var(--accent-green);">③ Runtime solver decisions</span></li>
+              <li style="opacity:0.6;">Rescaling, arc-length, sub-steps, attempts — all conditional</li>
+              <li style="margin-top:0.5em; font-style:italic;">→ No fixed schema; every field must be detected dynamically</li>
             </ul>
           </div>
+        </div>
+        <div style="text-align:center; font-size:0.5em; color:var(--mid-grey); margin-top:0.5em; font-family:'JetBrains Mono',monospace; letter-spacing:0.02em;">
+          Log File → <span style="color:var(--teal);">Header</span> (once) → <span style="color:var(--teal);">Step 1</span> [Iter 1..N → Summary] → <span style="color:var(--teal);">Step 2</span> [...] → ··· → <span style="color:var(--teal);">Phase Summary</span>
         </div>
       </section>
 
       <!-- METHODOLOGY: PARSING -->
-      <section class="slide-light">
+      <section class="slide-light" data-part="1" data-step="3">
         <h2>Methodology — Parsing Logic</h2>
         <ul>
           <li class="bold">Rule-based pipeline — 13 ordered rules, first match wins per line:</li>
@@ -472,7 +578,7 @@
       <!-- ════════════════════════════════════════════════════════════ -->
 
       <!-- Demo 1 -->
-      <section class="slide-demo">
+      <section class="slide-demo" data-part="1" data-step="4">
         <h2>Demo 1 — Data Ingestion &amp; Basic Features</h2>
         <p class="demo-subtitle">Select, Paste, Export, Import</p>
         <div class="accent-bar"></div>
@@ -486,7 +592,7 @@
       </section>
 
       <!-- Demo 2 -->
-      <section class="slide-demo">
+      <section class="slide-demo" data-part="1" data-step="4">
         <h2>Demo 2 — Overview Dashboard &amp; Step Detail</h2>
         <p class="demo-subtitle">Overview, Custom Plots, Step Detail</p>
         <div class="accent-bar"></div>
@@ -503,7 +609,7 @@
       </section>
 
       <!-- Demo 3 -->
-      <section class="slide-demo">
+      <section class="slide-demo" data-part="1" data-step="4">
         <h2>Demo 3 — Multi-Log Comparison</h2>
         <p class="demo-subtitle">Side-by-side analysis comparison</p>
         <div class="accent-bar"></div>
@@ -526,7 +632,7 @@
       </section>
 
       <!-- REPO, BRANCHING & TESTS (3-col) -->
-      <section class="slide-light">
+      <section class="slide-light" data-part="2" data-step="5">
         <h2>Repository, Branching &amp; Tests</h2>
         <div class="columns-3">
           <div class="col col-dark">
@@ -568,7 +674,7 @@
       </section>
 
       <!-- LIVE TRACKING -->
-      <section class="slide-dark">
+      <section class="slide-dark" data-part="2" data-step="7">
         <h2>Live Tracking — Real-Time Monitoring</h2>
         <ul>
           <li class="bold text-white" style="font-size:0.9em;">Monitor a running PLAXIS calculation — parse the convergence log as it grows.</li>
@@ -586,7 +692,7 @@
       </section>
 
       <!-- Demo 4 -->
-      <section class="slide-demo">
+      <section class="slide-demo" data-part="2" data-step="7">
         <h2>Demo 4 — Live Tracking</h2>
         <p class="demo-subtitle">Real-time convergence monitoring</p>
         <div class="accent-bar"></div>
@@ -603,7 +709,7 @@
       <!-- ════════════════════════════════════════════════════════════ -->
       <!-- SUMMARY                                                     -->
       <!-- ════════════════════════════════════════════════════════════ -->
-      <section class="slide-dark">
+      <section class="slide-dark" data-part="0">
         <h2>Summary</h2>
         <p class="italic" style="font-size:0.85em; color: #fff; margin-bottom: 0.8em;">PlaxisInsight transforms raw convergence logs into an interactive diagnostic tool.</p>
         <ul class="check-list">
@@ -636,6 +742,8 @@
     </div>
   </div>
 
+  <div id="outline-nav" class="hidden"></div>
+
   <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.min.js"></script>
   <script>
     Reveal.initialize({
@@ -652,6 +760,60 @@
       keyboard: true,
       overview: true,
       disableLayout: false,
+    });
+
+    // ── Outline breadcrumb ──
+    const outlineNav = document.getElementById('outline-nav');
+    const part1Items = [
+      { step: 1, label: 'Problem' },
+      { step: 2, label: 'Aim & Scope' },
+      { step: 3, label: 'Challenges' },
+      { step: 4, label: 'Demos' },
+    ];
+    const part2Items = [
+      { step: 5, label: 'Repo & Tests' },
+      { step: 6, label: 'Test Infra' },
+      { step: 7, label: 'Live Tracking' },
+    ];
+    const partLabels = { '1': 'PART 1:', '2': 'PART 2:' };
+
+    function updateBreadcrumb() {
+      var slide = Reveal.getCurrentSlide();
+      var part = slide.getAttribute('data-part');
+      var step = parseInt(slide.getAttribute('data-step'), 10);
+
+      if (!part || part === '0') {
+        outlineNav.classList.add('hidden');
+        return;
+      }
+
+      outlineNav.classList.remove('hidden');
+      var items = part === '1' ? part1Items : part2Items;
+      var isDark = slide.classList.contains('slide-dark') || slide.classList.contains('slide-demo');
+
+      outlineNav.classList.toggle('on-dark', isDark);
+
+      var html = '<span class="nav-part">' + partLabels[part] + '</span>';
+      items.forEach(function(item, i) {
+        html += '<span class="nav-sep">·</span>';
+        var active = item.step === step || (step === 5 && item.step === 6);
+        html += '<span class="nav-item' + (active ? ' active' : '') + '">' + item.label + '</span>';
+      });
+      outlineNav.innerHTML = html;
+    }
+
+    Reveal.on('slidechanged', updateBreadcrumb);
+    Reveal.on('ready', updateBreadcrumb);
+
+    // ── Accordion: close sibling details when one opens ──
+    document.querySelectorAll('.expandable').forEach(function(det) {
+      det.addEventListener('toggle', function() {
+        if (det.open) {
+          det.parentElement.querySelectorAll('.expandable').forEach(function(other) {
+            if (other !== det) other.removeAttribute('open');
+          });
+        }
+      });
     });
   </script>
 </body>
