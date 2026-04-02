@@ -282,7 +282,7 @@
     /* Summary check items */
     .check-list { list-style: none; padding-left: 0; }
     .check-list li { margin-bottom: 0.4em; font-size: 0.82em; }
-    .check-list li::before { display: none; }
+    .check-list li::before { display: none !important; }
     .check-mark { color: var(--accent-green); font-weight: 700; margin-right: 0.3em; }
     .check-verb { font-weight: 700; color: #fff; }
 
@@ -794,21 +794,20 @@
       </section>
 
       <!-- LIVE TRACKING -->
-      <section class="slide-dark" data-part="2" data-step="7">
-        <h2>Live Tracking — Real-Time Monitoring</h2>
-        <ul>
-          <li class="bold text-white" style="font-size:0.9em;">Monitor a running PLAXIS calculation — parse the convergence log as it grows.</li>
-          <li class="bold" style="margin-top:0.6em;">Two modes:</li>
-          <li class="sub">Companion server (<span class="mono">live-server.ts</span> on localhost:9876) — reliable reads of files held open by PLAXIS, supports changing watched directory at runtime</li>
-          <li class="sub">File System Access API (browser-only fallback) — no server needed</li>
-          <li class="bold" style="margin-top:0.6em;">Capabilities:</li>
-          <li class="sub">Phase selector modal — scans for <span class="mono">data.convd.rr#</span> files, shows phase numbers &amp; sizes</li>
-          <li class="sub">Auto-detects newly appearing phases during calculation</li>
-          <li class="sub">Per-phase stop / resume — freeze individual phases while tracking others</li>
-          <li class="sub">Inactivity detection — warning after 15 s of no file changes</li>
-          <li class="sub">Content-length based change detection (OS metadata unreliable while PLAXIS holds file handles)</li>
-          <li class="sub">1.5 s polling interval — low overhead, real-time feel</li>
+      <section class="slide-light" data-part="2" data-step="7">
+        <div style="background:var(--dark-teal); border-radius:12px; padding:1.5em 2em; color:var(--off-white);">
+        <h2 style="color:#fff; font-size:1.5em; margin-bottom:0.6em; border-bottom:3px solid var(--accent-green); padding-bottom:0.3em;">Live Tracking — Real-Time Monitoring</h2>
+        <ul style="list-style:none; padding-left:0;">
+          <li class="bold text-white" style="font-size:0.9em; margin-bottom:0.35em;">Monitor a running PLAXIS calculation — parse the convergence log as it grows.</li>
+          <li class="bold" style="margin-top:0.6em; margin-bottom:0.35em;">Two modes:</li>
+          <li class="sub" style="color:rgba(255,255,255,0.65); padding-left:1.5em; font-size:0.82em; margin-bottom:0.35em;">Companion server (<span class="mono">live-server.ts</span> on localhost:9876) — reliable reads of files held open by PLAXIS, supports changing watched directory at runtime</li>
+          <li class="sub" style="color:rgba(255,255,255,0.65); padding-left:1.5em; font-size:0.82em; margin-bottom:0.35em;">File System Access API (browser-only fallback) — no server needed</li>
+          <li class="bold" style="margin-top:0.6em; margin-bottom:0.35em;">Capabilities:</li>
+          <li class="sub" style="color:rgba(255,255,255,0.65); padding-left:1.5em; font-size:0.82em; margin-bottom:0.35em;">Phase selector modal — scans for <span class="mono">data.convd.rr#</span> files, shows phase numbers &amp; sizes</li>
+          <li class="sub" style="color:rgba(255,255,255,0.65); padding-left:1.5em; font-size:0.82em; margin-bottom:0.35em;">Auto-detects newly appearing phases during calculation</li>
+          <li class="sub" style="color:rgba(255,255,255,0.65); padding-left:1.5em; font-size:0.82em; margin-bottom:0.35em;">Per-phase stop / resume — freeze individual phases while tracking others</li>
         </ul>
+        </div>
       </section>
 
       <!-- Demo 4 -->
@@ -835,13 +834,13 @@
         <h2>Summary</h2>
         <p class="italic" style="font-size:0.85em; color: #fff; margin-bottom: 0.8em;">PlaxisInsight transforms raw convergence logs into an interactive diagnostic tool.</p>
         <ul class="check-list">
-          <li><span class="check-mark">✓</span> <span class="check-verb">Parse</span> — all 16 PLAXIS calculation types automatically</li>
+          <li><span class="check-mark">✓</span> <span class="check-verb">Parse</span> — PLAXIS calculation types automatically</li>
           <li><span class="check-mark">✓</span> <span class="check-verb">Visualise</span> — convergence errors, stiffness, plastic points, rescaling — interactive charts</li>
           <li><span class="check-mark">✓</span> <span class="check-verb">Compare</span> — multiple analyses with overlay charts and summary tables</li>
           <li><span class="check-mark">✓</span> <span class="check-verb">Custom plots</span> — any metric vs. any metric, step or iteration resolution</li>
           <li><span class="check-mark">✓</span> <span class="check-verb">Inspect</span> — every iteration — dynamic columns, tolerance colouring, fullscreen mode</li>
           <li><span class="check-mark">✓</span> <span class="check-verb">Export / Import</span> — lossless JSON round-trip for sharing and archival</li>
-          <li><span class="check-mark">✓</span> <span class="check-verb">Live tracking</span> — real-time monitoring of running PLAXIS calculations</li>
+          <li><span class="check-mark" style="color:var(--accent-blue);">⚙</span> <span class="check-verb">Live tracking</span> — real-time monitoring of running PLAXIS calculations <span style="font-size:0.75em; color:var(--accent-blue); font-style:italic;">(in development)</span></li>
         </ul>
         <p class="bold" style="margin-top:1em; color: var(--light-grey); font-size:0.78em;">Built for the CCG and Support teams — designed for any PLAXIS power user.</p>
       </section>
