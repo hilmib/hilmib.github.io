@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hilmi B. — Geotechnical Engineer &amp; Developer</title>
+  <meta name="description" content="Personal portfolio of Hilmi B. — Geotechnical Engineer & Software Developer." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%232563eb'/><text x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' fill='white' font-family='Inter,sans-serif' font-weight='700' font-size='18'>H</text></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            primary: '#2563eb',
+            'primary-light': '#eff6ff',
+            success: '#10b981',
+            violet: '#8b5cf6',
+            amber: '#f59e0b',
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    /* Fade-in-up animation */
+    .fade-in-up {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    }
+    .fade-in-up.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    /* Stagger children */
+    .stagger > .fade-in-up:nth-child(1) { transition-delay: 0ms; }
+    .stagger > .fade-in-up:nth-child(2) { transition-delay: 80ms; }
+    .stagger > .fade-in-up:nth-child(3) { transition-delay: 160ms; }
+    .stagger > .fade-in-up:nth-child(4) { transition-delay: 240ms; }
+    .stagger > .fade-in-up:nth-child(5) { transition-delay: 320ms; }
+    .stagger > .fade-in-up:nth-child(6) { transition-delay: 400ms; }
+    /* Smooth dark mode transition */
+    html.transitioning,
+    html.transitioning *,
+    html.transitioning *::before,
+    html.transitioning *::after {
+      transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease !important;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-900 dark:bg-slate-900 dark:text-slate-100 font-sans antialiased">
+
+  <!-- ─── Header ─── -->
+  <header id="header" class="fixed top-0 inset-x-0 z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200/60 dark:border-slate-700/60">
+    <div class="max-w-5xl mx-auto flex items-center justify-between px-6 h-14">
+      <a href="#hero" class="flex items-center gap-2.5 group">
+        <span class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white font-bold text-sm select-none">H</span>
+        <span class="font-semibold text-sm tracking-tight hidden sm:inline">Hilmi B.</span>
+      </a>
+      <nav class="flex items-center gap-1">
+        <a href="#projects" class="px-3 py-1.5 text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary rounded-lg transition-colors duration-200">Projects</a>
+        <a href="#contact" class="px-3 py-1.5 text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary rounded-lg transition-colors duration-200">Contact</a>
+        <button id="theme-toggle" aria-label="Toggle dark mode" class="ml-2 w-9 h-9 flex items-center justify-center rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors duration-200">
+          <i data-lucide="sun" class="w-[18px] h-[18px] hidden dark:block"></i>
+          <i data-lucide="moon" class="w-[18px] h-[18px] block dark:hidden"></i>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ─── Hero ─── -->
+  <section id="hero" class="min-h-[92vh] flex items-center pt-14">
+    <div class="max-w-5xl mx-auto px-6 py-24 md:py-32">
+      <div class="max-w-2xl">
+        <div class="fade-in-up">
+          <p class="text-primary font-mono text-sm font-medium mb-4 tracking-wide">Hello, I'm</p>
+        </div>
+        <h1 class="fade-in-up text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-[1.1] mb-4">
+          Hilmi B.
+        </h1>
+        <p class="fade-in-up text-xl sm:text-2xl font-light text-slate-500 dark:text-slate-400 mb-6">
+          Geotechnical Engineer <span class="text-primary">&amp;</span> Developer
+        </p>
+        <p class="fade-in-up text-base sm:text-lg text-slate-600 dark:text-slate-400 leading-relaxed mb-10 max-w-lg">
+          Building tools at the intersection of civil engineering and software — turning complex geotechnical data into clear, actionable insights.
+        </p>
+        <div class="fade-in-up flex flex-wrap gap-3">
+          <a href="#projects" class="inline-flex items-center gap-2 px-6 py-2.5 bg-primary text-white text-sm font-semibold rounded-full shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 active:scale-95 transition-all duration-200">
+            <i data-lucide="folder-open" class="w-4 h-4"></i>
+            View Projects
+          </a>
+          <a href="#contact" class="inline-flex items-center gap-2 px-6 py-2.5 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-sm font-semibold rounded-full border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 shadow-sm hover:shadow-md active:scale-95 transition-all duration-200">
+            <i data-lucide="mail" class="w-4 h-4"></i>
+            Contact
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── Projects ─── -->
+  <section id="projects" class="py-24 md:py-32">
+    <div class="max-w-5xl mx-auto px-6">
+      <div class="fade-in-up mb-14">
+        <p class="text-primary font-mono text-sm font-medium mb-2 tracking-wide">Portfolio</p>
+        <h2 class="text-3xl sm:text-4xl font-bold tracking-tight">Projects</h2>
+      </div>
+
+      <div class="grid gap-6 sm:grid-cols-2 stagger">
+
+        <!-- Featured: Plaxis Insight -->
+        <div class="fade-in-up sm:col-span-2 group bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-lg hover:shadow-xl transition-all duration-200 overflow-hidden">
+          <div class="p-6 sm:p-8 flex flex-col md:flex-row gap-6">
+            <div class="flex-shrink-0 w-14 h-14 bg-primary-light dark:bg-primary/10 rounded-2xl flex items-center justify-center">
+              <i data-lucide="bar-chart-3" class="w-7 h-7 text-primary"></i>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2 mb-1">
+                <span class="inline-flex items-center gap-1 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wider bg-amber/10 text-amber rounded-full border border-amber/20">
+                  <i data-lucide="star" class="w-3 h-3"></i> Featured
+                </span>
+              </div>
+              <h3 class="text-xl font-bold mb-2 group-hover:text-primary transition-colors duration-200">Plaxis Insight</h3>
+              <p class="text-slate-600 dark:text-slate-400 leading-relaxed mb-4">
+                Client-side log analysis tool for Plaxis 2D/3D calculation logs — visualize convergence, iteration errors, and step summaries directly in the browser.
+              </p>
+              <div class="flex flex-wrap gap-2 mb-5">
+                <span class="px-2.5 py-1 text-xs font-medium bg-blue-50 dark:bg-blue-500/10 text-primary rounded-full">React</span>
+                <span class="px-2.5 py-1 text-xs font-medium bg-blue-50 dark:bg-blue-500/10 text-primary rounded-full">TypeScript</span>
+                <span class="px-2.5 py-1 text-xs font-medium bg-blue-50 dark:bg-blue-500/10 text-primary rounded-full">Recharts</span>
+                <span class="px-2.5 py-1 text-xs font-medium bg-blue-50 dark:bg-blue-500/10 text-primary rounded-full">Vite</span>
+              </div>
+              <a href="https://github.com/hilmib/plaxis-insight" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline underline-offset-4">
+                <i data-lucide="github" class="w-4 h-4"></i>
+                View on GitHub
+                <i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Project 2 -->
+        <div class="fade-in-up group bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-lg hover:shadow-xl transition-all duration-200 p-6">
+          <div class="w-12 h-12 bg-violet/10 rounded-2xl flex items-center justify-center mb-4">
+            <i data-lucide="layers" class="w-6 h-6 text-violet"></i>
+          </div>
+          <h3 class="text-lg font-bold mb-2 group-hover:text-primary transition-colors duration-200">Soil Profile Plotter</h3>
+          <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed mb-4">
+            Interactive borehole log visualization tool that generates clean soil profile graphics from tabular data.
+          </p>
+          <div class="flex flex-wrap gap-2 mb-4">
+            <span class="px-2.5 py-1 text-xs font-medium bg-violet/10 text-violet rounded-full">Python</span>
+            <span class="px-2.5 py-1 text-xs font-medium bg-violet/10 text-violet rounded-full">Matplotlib</span>
+          </div>
+          <a href="#" class="inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline underline-offset-4">
+            View Project
+            <i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i>
+          </a>
+        </div>
+
+        <!-- Project 3 -->
+        <div class="fade-in-up group bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-lg hover:shadow-xl transition-all duration-200 p-6">
+          <div class="w-12 h-12 bg-success/10 rounded-2xl flex items-center justify-center mb-4">
+            <i data-lucide="calculator" class="w-6 h-6 text-success"></i>
+          </div>
+          <h3 class="text-lg font-bold mb-2 group-hover:text-primary transition-colors duration-200">Foundation Calculator</h3>
+          <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed mb-4">
+            Bearing capacity and settlement calculator implementing classical geotechnical theories with clear step-by-step output.
+          </p>
+          <div class="flex flex-wrap gap-2 mb-4">
+            <span class="px-2.5 py-1 text-xs font-medium bg-success/10 text-success rounded-full">JavaScript</span>
+            <span class="px-2.5 py-1 text-xs font-medium bg-success/10 text-success rounded-full">HTML/CSS</span>
+          </div>
+          <a href="#" class="inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline underline-offset-4">
+            View Project
+            <i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i>
+          </a>
+        </div>
+
+        <!-- Project 4 -->
+        <div class="fade-in-up group bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-lg hover:shadow-xl transition-all duration-200 p-6">
+          <div class="w-12 h-12 bg-amber/10 rounded-2xl flex items-center justify-center mb-4">
+            <i data-lucide="file-code-2" class="w-6 h-6 text-amber"></i>
+          </div>
+          <h3 class="text-lg font-bold mb-2 group-hover:text-primary transition-colors duration-200">GeoReport CLI</h3>
+          <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed mb-4">
+            Command-line tool for auto-generating geotechnical investigation reports from structured field data.
+          </p>
+          <div class="flex flex-wrap gap-2 mb-4">
+            <span class="px-2.5 py-1 text-xs font-medium bg-amber/10 text-amber rounded-full">Python</span>
+            <span class="px-2.5 py-1 text-xs font-medium bg-amber/10 text-amber rounded-full">CLI</span>
+            <span class="px-2.5 py-1 text-xs font-medium bg-amber/10 text-amber rounded-full">Jinja2</span>
+          </div>
+          <a href="#" class="inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline underline-offset-4">
+            View Project
+            <i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i>
+          </a>
+        </div>
+
+        <!-- Project 5 -->
+        <div class="fade-in-up group bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-lg hover:shadow-xl transition-all duration-200 p-6">
+          <div class="w-12 h-12 bg-primary-light dark:bg-primary/10 rounded-2xl flex items-center justify-center mb-4">
+            <i data-lucide="map" class="w-6 h-6 text-primary"></i>
+          </div>
+          <h3 class="text-lg font-bold mb-2 group-hover:text-primary transition-colors duration-200">Site Map Viewer</h3>
+          <p class="text-sm text-slate-600 dark:text-slate-400 leading-relaxed mb-4">
+            Lightweight web map for plotting borehole locations and overlaying site investigation data on satellite imagery.
+          </p>
+          <div class="flex flex-wrap gap-2 mb-4">
+            <span class="px-2.5 py-1 text-xs font-medium bg-blue-50 dark:bg-blue-500/10 text-primary rounded-full">Leaflet</span>
+            <span class="px-2.5 py-1 text-xs font-medium bg-blue-50 dark:bg-blue-500/10 text-primary rounded-full">GeoJSON</span>
+            <span class="px-2.5 py-1 text-xs font-medium bg-blue-50 dark:bg-blue-500/10 text-primary rounded-full">JavaScript</span>
+          </div>
+          <a href="#" class="inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline underline-offset-4">
+            View Project
+            <i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i>
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── Contact / Footer ─── -->
+  <section id="contact" class="py-24 md:py-32 border-t border-slate-200/80 dark:border-slate-700/60">
+    <div class="max-w-5xl mx-auto px-6">
+      <div class="fade-in-up text-center max-w-md mx-auto mb-12">
+        <p class="text-primary font-mono text-sm font-medium mb-2 tracking-wide">Get in Touch</p>
+        <h2 class="text-3xl sm:text-4xl font-bold tracking-tight mb-4">Contact</h2>
+        <p class="text-slate-600 dark:text-slate-400 leading-relaxed">
+          Interested in collaborating or have a question? Feel free to reach out.
+        </p>
+      </div>
+      <div class="fade-in-up flex flex-wrap items-center justify-center gap-4">
+        <a href="https://github.com/hilmib" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 px-5 py-2.5 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-sm font-semibold rounded-full border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 shadow-sm hover:shadow-md active:scale-95 transition-all duration-200">
+          <i data-lucide="github" class="w-4 h-4"></i>
+          GitHub
+        </a>
+        <a href="https://linkedin.com/in/" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 px-5 py-2.5 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-sm font-semibold rounded-full border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 shadow-sm hover:shadow-md active:scale-95 transition-all duration-200">
+          <i data-lucide="linkedin" class="w-4 h-4"></i>
+          LinkedIn
+        </a>
+        <a href="mailto:hello@example.com" class="inline-flex items-center gap-2 px-5 py-2.5 bg-primary text-white text-sm font-semibold rounded-full shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 active:scale-95 transition-all duration-200">
+          <i data-lucide="mail" class="w-4 h-4"></i>
+          Email Me
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── Footer ─── -->
+  <footer class="border-t border-slate-200/80 dark:border-slate-700/60 py-8">
+    <div class="max-w-5xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-slate-500 dark:text-slate-400">
+      <p>&copy; <span id="year"></span> Hilmi B. All rights reserved.</p>
+      <p class="font-mono text-xs">Built with HTML, Tailwind &amp; ☕</p>
+    </div>
+  </footer>
+
+  <!-- ─── Scripts ─── -->
+  <script>
+    // Initialize Lucide icons
+    lucide.createIcons();
+
+    // Set current year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // ── Dark mode toggle ──
+    const toggle = document.getElementById('theme-toggle');
+    const html = document.documentElement;
+
+    function applyTheme(dark) {
+      html.classList.add('transitioning');
+      html.classList.toggle('dark', dark);
+      localStorage.setItem('theme', dark ? 'dark' : 'light');
+      requestAnimationFrame(() => {
+        setTimeout(() => html.classList.remove('transitioning'), 300);
+      });
+    }
+
+    // Init theme
+    const stored = localStorage.getItem('theme');
+    if (stored === 'dark' || (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      html.classList.add('dark');
+    }
+
+    toggle.addEventListener('click', () => {
+      applyTheme(!html.classList.contains('dark'));
+    });
+
+    // ── Scroll animations ──
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.08, rootMargin: '0px 0px -40px 0px' }
+    );
+
+    document.querySelectorAll('.fade-in-up').forEach((el) => observer.observe(el));
+
+    // ── Header shadow on scroll ──
+    const header = document.getElementById('header');
+    window.addEventListener('scroll', () => {
+      header.classList.toggle('shadow-sm', window.scrollY > 10);
+    }, { passive: true });
+  </script>
+</body>
+</html>
