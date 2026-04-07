@@ -1,0 +1,242 @@
+PLAXIS CONVERGENCE LOG — COMPLETE SKELETON
+============================================
+
+PART 1: HEADER (printed once)
+├─
+├─ CALCULATION TYPE
+│  ├─ Plastic | Consolidation | Safety | Dynamics | Dynamics with consolidation
+│  ├─ Fully coupled | Fully coupled THM
+│  ├─ Transient GW flow | Steady state GW flow
+│  ├─ Transient heat flow | Steady state heat flow
+│  ├─ Transient heat and GW flow | Steady state heat and GW flow
+│  └─ Earth gradient | Earth gradient and GW flow
+│
+├─ CONVERGENCE CRITERIA
+│  ├─ Thermal
+│  │  ├─ Global heat flow error tolerance                          <value>
+│  │  ├─ Average temperature change error tolerance                <value>
+│  │  └─ Global heat storage variation tolerance                   <value>
+│  │
+│  ├─ GW flow / Coupled
+│  │  ├─ Global GW flow error tolerance                            <value>
+│  │  ├─ Steady state regime
+│  │  │  ├─ Local GW flow error tolerance                          <value>
+│  │  │  ├─ Average pore pressure change tolerance                 <value>
+│  │  │  ├─ Maximum pore pressure change tolerance                 <value>
+│  │  │  └─ Inaccurate pore pressure node tolerance                <value>
+│  │  ├─ Unsaturated behaviour
+│  │  │  ├─ Unsaturated behaviour tolerance                        <value>
+│  │  │  ├─ Excessive degree-of-sat threshold                      <value>
+│  │  │  └─ Excessive relative perm. threshold                     <value>
+│  │  └─ Boundary nodes status
+│  │     ├─ Inaccurate seepage node ratio tolerance                <value>
+│  │     ├─ Inaccurate ponding node ratio tolerance                <value>
+│  │     └─ Max. number of iter. for checking status change
+│  │        ├─ Seepage nodes                                       <integer>
+│  │        ├─ Drain nodes                                         <integer>
+│  │        ├─ Well nodes                                          <integer>
+│  │        └─ Ponding nodes                                       <integer>
+│  │
+│  └─ Mechanical / Deformation
+│     ├─ Global force error tolerance                              <value>
+│     ├─ Integrated soil local error tolerance                     <value>
+│     ├─ Global moment error tolerance                             <value>
+│     ├─ Soil accuracy
+│     │  ├─ Inaccurate soil plastic point tolerance                <value>
+│     │  └─ Inaccurate soil elastic point tolerance                <value>
+│     ├─ Interface / Discontinuity
+│     │  ├─ Integrated interface/discontinuity local error tol.    <value>
+│     │  └─ Inaccurate interface/discontinuity plastic point tol.  <value>
+│     ├─ Embedded beam/cable interface error tolerance              <value>
+│     ├─ Structural elements
+│     │  ├─ Inaccurate plate plastic point tolerance               <value>
+│     │  └─ Inaccurate beam plastic point tolerance                <value>
+│     ├─ Geogrid
+│     │  ├─ Integrated geogrid local error tolerance               <value>
+│     │  └─ Inaccurate geogrid plastic point tolerance             <value>
+│     └─ Anchor
+│        ├─ Integrated anchor local error tolerance                <value>
+│        └─ Inaccurate plastic anchor tolerance                    <value>
+│
+└─ STEP SIZE CONTROL PARAMETERS
+   ├─ Maximum iterations per step                                  <integer>
+   ├─ Desired minimum iterations per step                          <integer>
+   ├─ Desired maximum iterations per step                          <integer>
+   ├─ Maximum consecutive negative steps                           <integer>
+   ├─ Arc-length control                                           <Off|On|Auto>
+   └─ Updated mesh                                                 <Off|On|Auto>
+
+
+PART 2: STEPS (repeated per step)
+├─
+├─ ═══════════════════════════════════════════════
+│  STEP <N>  |  ADDITIONAL STEP FOR TARGET MSF
+│  ═══════════════════════════════════════════════
+│
+├─ ITERATION BLOCK (repeated per iteration/attempt/sub-step)
+│  │
+│  │  Header variants:
+│  │    STEP <N> - ATTEMPT <A> - ITERATION <I>
+│  │    STEP <N> - SUB-STEP <S> - ITERATION <I>
+│  │    STEP <N> - FINAL STRESS UPDATE
+│  │    ADDITIONAL STEP - ATTEMPT <A> - ITERATION <I>
+│  │
+│  ├─ Step size & control
+│  │  ├─ Current step size <tUnit>                                 <value>
+│  │  ├─ Uncorrected strength reduction factor                     <value>
+│  │  ├─ Current strength reduction factor                         <value>
+│  │  ├─ Arc-length factor                                         <value>
+│  │  └─ Total number of iterations in current step                <integer>
+│  │
+│  ├─ Convergence errors
+│  │  ├─ Global force error                                        <value>
+│  │  ├─ Integrated soil local error                               <value>
+│  │  ├─ Integrated interface local error                          <value>
+│  │  ├─ Global moment error                                       <value>
+│  │  ├─ Embedded beam interface error                             <value>
+│  │  ├─ Integrated geogrid local error                            <value>
+│  │  ├─ Integrated anchor local error                             <value>
+│  │  ├─ Global GW flow error                                      <value>
+│  │  └─ Global heat flow error                                    <value>
+│  │
+│  ├─ STEADY STATE REGIME
+│  │  ├─ Updated global GW flow error                              <value>
+│  │  ├─ Local GW flow error                                       <value>
+│  │  ├─ Average pore pressure change                              <value>
+│  │  ├─ Maximum pore pressure change                              <value>
+│  │  ├─ Average relative perm. change                             <value>
+│  │  ├─ Average degree-of-saturation change                       <value>
+│  │  ├─ Check steady state / Check steady state regime
+│  │  │  ├─ [<message>]
+│  │  │  └─ Steady state GW flow regime reached                    <YES|NO>
+│  │  ├─ Global heat flow error                                    <value>
+│  │  ├─ Global temperature change error                           <value>
+│  │  └─ Check steady state
+│  │     ├─ [<message>]
+│  │     └─ Steady state heat flow regime reached                  <YES|NO>
+│  │
+│  ├─ Time step upscale validity
+│  │  ├─ Average relative perm. change                             <value>
+│  │  ├─ Average degree-of-sat. change                             <value>
+│  │  └─ Check variation in unsaturated zone
+│  │     ├─ [<message>]
+│  │     └─ Upscaling step size confirmed                          <YES|NO>
+│  │
+│  ├─ Check convergence
+│  │  ├─ [<message>]
+│  │  └─ Converged attempt                                         <YES|NO>
+│  │
+│  ├─ Flow boundary condition changes
+│  │  ├─ BC status iteration number                                <integer>
+│  │  ├─ Number of inaccurate seepage nodes                        <integer>
+│  │  ├─ Number of inaccurate drain nodes                          <integer>
+│  │  ├─ Number of inaccurate well nodes                           <integer>
+│  │  ├─ Number of inaccurate ponding nodes                        <integer>
+│  │  └─ Check boundary conditions status
+│  │     ├─ [<message>]
+│  │     └─ Valid boundary conditions status                        <YES|NO>
+│  │
+│  ├─ Unsaturated behaviour monitoring
+│  │  ├─ Average relative perm. change                             <value>
+│  │  ├─ Average degree-of-sat. change                             <value>
+│  │  └─ Check variation in unsaturated zone
+│  │     ├─ [<message>]
+│  │     └─ Valid converged attempt                                 <YES|NO>
+│  │
+│  ├─ Freezing/thawing induced heat storage change
+│  │  ├─ Global heat storage variation                             <value>
+│  │  ├─ [<message>]
+│  │  └─ Acceptable heat storage variation                         <YES|NO>
+│  │
+│  ├─ Rescaling events
+│  │  ├─ <reason>                              (7 known reasons)
+│  │  │    Rescaling: step size scale factor                        <value>
+│  │  │  Reasons: Diverging solution | Close to ultimate level
+│  │  │           Reached desired maximum number of iterations
+│  │  │           Number of iterations below desired minimum
+│  │  │           Scaling step size to reach ultimate level
+│  │  │           Thermal scale down
+│  │  │           Excessive change of relative perm. or degree of sat.
+│  │  │
+│  │
+│  ├─ Plastic points (7 families × up to 4 rows)
+│  │  ├─ Soil plastic points
+│  │  │  ├─ Total / Inaccurate / Total tension / Inaccurate tension
+│  │  ├─ Interface plastic points
+│  │  │  ├─ Total / Inaccurate / Total tension / Inaccurate tension
+│  │  ├─ Plate plastic points
+│  │  │  ├─ Total / Inaccurate
+│  │  ├─ Beam plastic points
+│  │  │  ├─ Total / Inaccurate
+│  │  ├─ Geogrid plastic points
+│  │  │  ├─ Total / Inaccurate
+│  │  ├─ Anchor plastic points
+│  │  │  ├─ Total / Inaccurate
+│  │  └─ Flexible hinge plastic points
+│  │     ├─ Total / Inaccurate
+│  │
+│  └─ Inaccurate soil elastic points                               <integer>
+│
+├─ STEP SUMMARY
+│  │
+│  │  Header variants:
+│  │    STEP <N> - SUMMARY
+│  │    STEP <N> - SUB-STEP <S> - SUMMARY
+│  │    ADDITIONAL STEP - SUMMARY
+│  │
+│  ├─ Reached value
+│  │  ├─ Reached sum-MStage                                        <value>
+│  │  ├─ Reached time <tUnit>                                      <value>
+│  │  └─ Reached sum-MSF                                           <value>
+│  │
+│  ├─ Step convergence achieved                                    <YES|NO>
+│  ├─ Relative stiffness                                           <value>
+│  │
+│  ├─ Steady state GW flow regime reached                          <YES|NO>
+│  ├─ Steady state heat flow regime reached                        <YES|NO>
+│  │
+│  ├─ Average relative perm. change                                <value>
+│  ├─ Average degree-of-saturation change                          <value>
+│  │
+│  ├─ Maximum degree-of-consolidation                              <value>
+│  │
+│  └─ Extrema with locations
+│     ├─ Maximum pore pressure change              <value>  → At node <id>, Location(x,y,z)
+│     ├─ Maximum relative permeability change      <value>  → At stress point <id>, Location(x,y,z)
+│     ├─ Maximum degree-of-saturation change       <value>  → At stress point <id>, Location(x,y,z)
+│     ├─ Maximum temperature change                <value>  → At node <id>, Location(x,y,z)
+│     ├─ Maximum excess pore pressure              <value>  → At stress point <id>, Location(x,y,z)
+│     ├─ Maximum out-of-balance force              <value>  → At node <id>, dof <d>, Location(x,y,z)
+│     └─ Maximum incremental displacement          <value>  → At node <id>, dof <d>, Location(x,y,z)
+│
+│  ... next STEP ...
+
+
+PART 3: PHASE SUMMARY (printed once at end)
+├─
+├─ ═══════════════════════════════════════════════
+│  ═══════════════════════════════════════════════
+│  PHASE SUMMARY
+│  ═══════════════════════════════════════════════
+│  ═══════════════════════════════════════════════
+│
+└─ <outcome message>
+   └─ <detail message>
+
+   Outcome messages:
+     Prescribed ultimate state reached
+     Steady state regime reached
+     Transient flow end time reached
+     Prescribed ultimate state not reached
+     Soil body collapses
+     Not enough load steps.
+     Calculation aborted
+     Load advancement procedure fails
+     Accuracy condition not reached
+     ERROR (<N>) IN PLAS: <description>
+     WARNING (<N>) IN PLAS: <description>
+
+   Detail messages:
+     Too many consecutive negative steps
+     Too many consecutive negative/very small steps
+     Nearly zero increment

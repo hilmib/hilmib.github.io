@@ -1,0 +1,70 @@
+Master Prompt for "Challenges — Log File Structure" Slide
+==========================================================
+
+Create a presentation slide titled "Challenges — Log File Structure" for a technical talk about parsing PLAXIS convergence log files. Use a clean, modern layout with three columns. Use a teal/dark-teal color scheme for headers and cards.
+
+---
+
+Column 1 — "PART 1: HEADER — Solver Settings"
+
+This section is printed once at the top of every log file before any step data. It has two sub-sections:
+
+- CONVERGENCE CRITERIA — a table of tolerance thresholds the solver uses to decide convergence. Organized into three groups:
+  - Thermal criteria: heat flow error, temperature change error, heat storage variation tolerances
+  - GW flow / coupled criteria: GW flow error tolerance, plus sub-groups for steady-state regime (local flow error, pore pressure change, relative permeability change, degree-of-saturation change), unsaturated behaviour thresholds, and boundary node status iteration limits (seepage, drain, well, ponding nodes)
+  - Mechanical / deformation criteria: global force error, soil local error, moment error, soil accuracy (plastic & elastic point tolerances), interface/discontinuity tolerances, embedded beam interface error, structural element tolerances (plate, beam), geogrid tolerances, anchor tolerances
+
+- STEP SIZE CONTROL PARAMETERS — iteration control settings:
+  - Max iterations per step, desired min/max iterations, max consecutive negative steps
+  - Control flags: Arc-length control (Off/On/Auto), Updated mesh (Off/On/Auto)
+
+All values are printed in Fortran fixed-width format (E10.3 for floats, i8 for integers). Some labels get truncated due to column width, requiring special handling.
+
+---
+
+Column 2 — "PART 2: PHASE BODY — Solver History"
+
+This is the bulk of the file. It contains a sequence of Steps, each containing:
+
+- Per-iteration data (one block per iteration within a step):
+  - Step size (with time unit label, e.g. "in days", "in seconds")
+  - Up to 9 convergence error fields (force, soil, interface, moment, embedded beam, geogrid, anchor, GW flow, heat flow)
+  - Plastic points: 7 element families (Soil, Interface, Plate, Beam, Geogrid, Anchor, Flexible hinge) × up to 4 rows (Total, Inaccurate, Total tension, Inaccurate tension)
+  - Inaccurate soil elastic points (standalone scalar)
+  - Rescaling events: scale factor + reason (7 known reasons: diverging solution, close to ultimate level, desired max iterations reached, below desired minimum, scaling to ultimate level, thermal scale down, excessive unsaturated change)
+  - 6 known sub-blocks: Check convergence, Steady state regime, Flow boundary condition changes, Time step upscale validity, Unsaturated behaviour monitoring, Freezing/thawing heat storage change — each with nested metrics, messages, and YES/NO sentinels
+  - Attempt / sub-step / final stress update variants of iteration headers
+
+- Step summary (one block after all iterations):
+  - Converged: YES / NO
+  - Reached value: sum-MStage, time, or sum-MSF (with time unit)
+  - Relative stiffness, max out-of-balance force, max incremental displacement (each with node location: node ID, DOF, x, y, z coordinates)
+  - Optional steady-state and unsaturated status flags
+  - Extrema list with stress-point or node locations
+
+End of phase: PHASE SUMMARY block with outcome message (e.g. "Prescribed ultimate state reached", "Soil body collapses", "Calculation aborted")
+
+---
+
+Column 3 — "THE CHALLENGE"
+
+The fundamental parsing challenge: which fields appear in the log is not fixed — it depends on three factors:
+
+1. Calculation type (16 types): Plastic, Consolidation, Safety, Dynamics, Dynamics with consolidation, Fully coupled, Fully coupled THM, Transient GW flow, Steady state GW flow, Transient heat flow, Steady state heat flow, Transient heat and GW flow, Steady state heat and GW flow, Earth gradient, Earth gradient and GW flow
+   - A Plastic analysis has no GW flow or thermal fields; a Fully coupled THM analysis has all of them
+   - Safety analysis adds strength reduction factor fields but has no time unit
+   - Dynamics adds dynamic-specific summary metrics
+
+2. Element types present in the model: Interface, Geogrid, Anchor, Plate, Beam, Flexible hinge, Embedded beam
+   - Convergence error fields and plastic point families only appear if the corresponding element type exists in the model
+   - A model without interfaces produces no interface error line and no interface plastic points block
+
+3. Solver decisions at runtime: Rescaling events, arc-length activation, sub-steps, multiple attempts, steady-state checks, boundary condition iterations — all appear conditionally based on what the solver encounters during the calculation
+
+This means the parser cannot assume a fixed schema — every field must be detected dynamically and the output structure must accommodate optional/absent sections gracefully.
+
+---
+
+Style notes:
+- Keep the challenge column visually distinct (e.g., lighter background or accent border) to emphasize it as the takeaway
+- Optionally add a small schematic arrow flow at the bottom: Log File → Header (fixed once) → Step 1 [Iter 1..N → Summary] → Step 2 [...] → ... → Phase Summary
