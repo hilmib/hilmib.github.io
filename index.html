@@ -9,28 +9,19 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/lucide@latest"></script>
   <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Inter', 'system-ui', 'sans-serif'],
-            mono: ['JetBrains Mono', 'monospace'],
-          },
-          colors: {
-            primary: '#2563eb',
-            'primary-light': '#eff6ff',
-            success: '#10b981',
-            violet: '#8b5cf6',
-            amber: '#f59e0b',
-          },
-        },
-      },
-    };
+    // Apply theme before first paint to avoid a flash of the wrong color scheme.
+    (function () {
+      try {
+        const stored = localStorage.getItem('theme');
+        if (stored === 'dark' || (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+          document.documentElement.classList.add('dark');
+        }
+      } catch (e) {}
+    })();
   </script>
+  <link rel="stylesheet" href="assets/app.css" />
+  <script src="https://unpkg.com/lucide@latest"></script>
   <style>
     /* Fade-in-up animation */
     .fade-in-up {
@@ -91,7 +82,7 @@
         <p class="fade-in-up text-xl sm:text-2xl font-light text-slate-500 dark:text-slate-400 mb-6">
           Geotechnical Engineer <span class="text-primary">&amp;</span> Developer
         </p>
-        <p class="fade-in-up text-base sm:text-lg text-slate-600 dark:text-slate-400 leading-relaxed mb-10 max-w-lg">
+        <p class="fade-in-up text-base sm:text-lg text-slate-600 dark:text-slate-400 leading-relaxed mb-10 max-w-xl">
           Designing tools that turn geotechnical complexity into clarity.
         </p>
         <div class="fade-in-up flex flex-wrap gap-3">
@@ -116,10 +107,10 @@
         <h2 class="text-3xl sm:text-4xl font-bold tracking-tight">Projects</h2>
       </div>
 
-      <div class="grid gap-6 sm:grid-cols-2 stagger">
+      <div class="grid gap-6 max-w-3xl mx-auto stagger">
 
         <!-- Featured: Plaxis Insight -->
-        <div class="fade-in-up sm:col-span-2 group bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-lg hover:shadow-xl transition-all duration-200 overflow-hidden">
+        <div class="fade-in-up group bg-white dark:bg-slate-800 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 shadow-lg hover:shadow-xl transition-all duration-200 overflow-hidden">
           <div class="p-6 sm:p-8 flex flex-col md:flex-row gap-6">
             <div class="flex-shrink-0 w-14 h-14 bg-primary-light dark:bg-primary/10 rounded-2xl flex items-center justify-center">
               <i data-lucide="bar-chart-3" class="w-7 h-7 text-primary"></i>
@@ -150,7 +141,7 @@
                   Source Code
                   <i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i>
                 </a>
-                <a href="PlaxisInsight/PlaxisInsight_Presentation.html" class="inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline underline-offset-4">
+                <a href="PlaxisInsight/PlaxisInsight_Presentation.html" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline underline-offset-4">
                   <i data-lucide="presentation" class="w-4 h-4"></i>
                   Presentation
                   <i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i>
@@ -219,12 +210,6 @@
       requestAnimationFrame(() => {
         setTimeout(() => html.classList.remove('transitioning'), 300);
       });
-    }
-
-    // Init theme
-    const stored = localStorage.getItem('theme');
-    if (stored === 'dark' || (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-      html.classList.add('dark');
     }
 
     toggle.addEventListener('click', () => {
