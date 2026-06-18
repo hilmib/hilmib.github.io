@@ -257,12 +257,13 @@
     var W0 = H0 * 0.5; // ~2:1 height-to-width prismatic biaxial sample
     // On a wide canvas the specimen sits LEFT of centre so the stress–strain
     // plot can sit beside it on the right; otherwise centred. Touch devices in
-    // landscape get the same side-by-side treatment even though the split
-    // stage canvas is narrower than a desktop one.
+    // landscape ALWAYS get the side-by-side treatment — even on a small phone
+    // the split stage is too narrow to stack a corner plot without it landing
+    // on top of the (centred) specimen, so we shift left and plot to the right.
     var wide = W >= 600 ||
       (typeof matchMedia === 'function' &&
        matchMedia('(pointer: coarse) and (orientation: landscape)').matches &&
-       W >= 340);
+       W >= 240);
     var cx = wide ? W * 0.30 : W * 0.5;
     var baseY = H * 0.5 + H0 / 2; // fixed pedestal (bottom); top platen descends
 
