@@ -59,11 +59,74 @@
     return document.documentElement.classList.contains('dark');
   }
 
+  // True when the layout shows the specimen beside the narrative (desktop, or
+  // any landscape/square viewport). Mirrors the CSS media queries exactly so
+  // the canvas-sizing and the drawing agree on which regime we are in.
+  function isSideBySide() {
+    return typeof matchMedia === 'function' &&
+      (matchMedia('(min-width: 1024px)').matches ||
+       matchMedia('(min-aspect-ratio: 1/1)').matches);
+  }
+
+  // ── Figure metrics: the specimen+plot cluster, driven purely by height ──
+  // The specimen height follows the page (canvas) height; everything else —
+  // specimen width, σ₃-arrow clearance, the gap, and the height-locked plot —
+  // is derived from it. So the figure has ONE natural width (figureW) that does
+  // NOT depend on the canvas width. We size the canvas to figureW (see
+  // fitFrame) so it hugs the figure perfectly, and draw with the same numbers
+  // so the two never disagree. Left→right: leftPad · specimen · σ₃ arm · gap ·
+  // plot · rightPad.
+  function biaxialMetrics(Hpx) {
+    var H0 = Math.max(160, Math.min(Hpx * 0.56, 470));
+    var W0 = H0 * 0.5;            // ~2:1 prismatic specimen
+    var specHalf = W0 * 0.6;     // half-width incl. barrel bulge at full strain
+    var armReach = 28;           // σ₃ arrow length beyond the boundary node
+    var leftPad = specHalf + 34; // left σ₃ arrow + σ₁ label clearance
+    var gap = W0 * 0.45;         // specimen → plot separation
+    var plotW = H0 * 0.75;       // height-locked plot (height = 0.8·plotW = H0·0.6)
+    var rightPad = 24;           // εᵥ axis-label clearance
+    var cx = leftPad;                                  // specimen centre
+    var plotX = cx + specHalf + armReach + gap;        // plot left edge
+    var figureW = plotX + plotW + rightPad;            // natural cluster width
+    return { H0: H0, W0: W0, cx: cx, plotX: plotX, plotW: plotW, figureW: figureW };
+  }
+
+  // Constrain the sticky stage frame to the figure's natural width so the
+  // canvas hugs the specimen+plot exactly and its grid column (auto) shrinks to
+  // match. The text column then fills the rest, and because the wrapper is
+  // centred the text + figure pair reads as one centred unit with a constant
+  // gap. We clamp the figure width against the grid container (.scrolly) so a
+  // narrow viewport keeps a minimum text width instead of overflowing — the
+  // figure scales down to fit (see drawBiaxial). This applies ONLY to the
+  // desktop split (≥1024px). On the smaller landscape/square and the stacked
+  // portrait layouts the frame fills its grid column as before.
+  function fitFrame() {
+    var frame = canvas.parentNode;        // .stage-frame
+    if (!frame) return;
+    var desktopSplit = typeof matchMedia === 'function' &&
+      matchMedia('(min-width: 1024px)').matches;
+    if (!desktopSplit) {
+      frame.style.width = '';             // let it fill its grid column
+      return;
+    }
+    var hPx = frame.getBoundingClientRect().height; // 82vh, width-independent
+    var want = biaxialMetrics(hPx).figureW;
+    var container = document.querySelector('.scrolly'); // the grid box
+    if (container) {
+      var GAP = 32;        // column-gap (2rem)
+      var MIN_TEXT = 544;  // narrative max-width (34rem) — keep room for the text
+      var avail = container.clientWidth - GAP - MIN_TEXT;
+      if (avail > 0) want = Math.min(want, avail);
+    }
+    frame.style.width = want + 'px';
+  }
+
   // ── Sizing (DPR-capped for battery/perf) ──
   // The canvas now fills its sticky stage panel, so we measure the element's
   // own box rather than the whole window.
   function resize() {
     dpr = Math.min(window.devicePixelRatio || 1, 2);
+    fitFrame();                  // size the frame to the figure, then measure
     var rect = canvas.getBoundingClientRect();
     W = Math.max(1, Math.round(rect.width));
     H = Math.max(1, Math.round(rect.height));
@@ -251,20 +314,18 @@
     var epsA = epsPct / 100;     // ratio
 
     var narrow = W < 560;
-    // Centerpiece: the specimen owns its sticky stage panel, so it is sized
-    // boldly and centred (narrative text lives in the separate column).
-    var H0 = Math.max(160, Math.min(H * 0.56, 470));
-    var W0 = H0 * 0.5; // ~2:1 height-to-width prismatic biaxial sample
-    // On a wide canvas the specimen sits LEFT of centre so the stress–strain
-    // plot can sit beside it on the right; otherwise centred. Any landscape
-    // viewport ALWAYS gets the side-by-side treatment — even on a small phone
-    // the split stage is too narrow to stack a corner plot without it landing
-    // on top of the (centred) specimen, so we shift left and plot to the right.
-    var wide = W >= 600 ||
-      (typeof matchMedia === 'function' &&
-       matchMedia('(min-aspect-ratio: 1/1)').matches &&
-       W >= 240);
-    var cx = wide ? W * 0.30 : W * 0.5;
+    // Centerpiece: the specimen+plot cluster is sized from the canvas HEIGHT
+    // (see biaxialMetrics) and the canvas is sized to hug that cluster, so the
+    // figure fills the canvas. If the canvas is narrower than the natural
+    // figure width (tight column) we scale the whole figure down to fit.
+    var wide = isSideBySide();
+    var m = biaxialMetrics(H);
+    var sc = wide ? Math.min(1, W / m.figureW) : 1;
+    var H0 = m.H0 * sc;
+    var W0 = m.W0 * sc;             // ~2:1 height-to-width prismatic biaxial sample
+    var cx = wide ? m.cx * sc : W * 0.5;
+    var plotX = m.plotX * sc;
+    var plotW = m.plotW * sc;
     var baseY = H * 0.5 + H0 / 2; // fixed pedestal (bottom); top platen descends
 
     var phiDeg = 34;
@@ -475,12 +536,11 @@
     ctx.restore();
 
     // Stress–strain inset (q–εa with εv overlay). On wide canvases it sits to
-    // the RIGHT of the specimen; plotX is the left edge of that free zone and
-    // baseY' (pedBottomY) aligns the plot's bottom axis with the specimen base.
-    // The gap is tighter on narrow (mobile-landscape) canvases where space
-    // is at a premium.
-    var plotX = cx + W0 * 0.58 + (narrow ? 56 : 80);
-    drawStressStrainInset(p, epsPct, epsMaxPct, narrow, wide, plotX, pedBottomY);
+    // the RIGHT of the specimen as part of the height-driven cluster; plotX is
+    // its left edge and plotW its width (both from biaxialMetrics, scaled to
+    // fit). Its bottom axis aligns with the specimen base (pedBottomY) so the
+    // two read as one coherent figure.
+    drawStressStrainInset(p, epsPct, epsMaxPct, narrow, wide, plotX, pedBottomY, plotW);
   }
 
   // Volumetric strain (ratio) vs axial strain (%). Dense-soil response,
@@ -521,14 +581,14 @@
     return rres + (1 - rres) * Math.exp(-(epsPct - peak) * 0.22);
   }
 
-  function drawStressStrainInset(p, epsPct, epsMaxPct, narrow, wide, plotX, baseAlignY) {
+  function drawStressStrainInset(p, epsPct, epsMaxPct, narrow, wide, plotX, baseAlignY, plotW) {
     var bx, by, bw, bh;
     if (wide) {
-      // Desktop: the specimen sits left-of-centre, so the plot lives in the
-      // free space to its RIGHT (plotX). Its bottom axis is aligned with the
-      // specimen base (baseAlignY) so the two read as one coherent figure.
-      var rightMargin = Math.round(W * 0.045);
-      bw = Math.round(Math.min(260, W - plotX - rightMargin));
+      // Desktop: the plot is part of the height-driven specimen+plot cluster.
+      // Its width (plotW) and left edge (plotX) come from biaxialMetrics, and
+      // its bottom axis is aligned with the specimen base (baseAlignY) so the
+      // two read as one coherent figure. Height keeps the fixed 0.8 (y/x) ratio.
+      bw = Math.round(plotW);
       bh = Math.round(bw * 0.8); // fixed aspect ratio: y-axis = 0.8 × x-axis
       bx = Math.round(plotX);
       by = Math.round(baseAlignY - bh);

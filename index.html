@@ -76,6 +76,11 @@
       width: 100%;
       height: 82vh;
     }
+    /* DEBUG: temporary layout outlines — remove later */
+    .stage-frame { outline: 2px solid red; }
+    #backdrop { outline: 2px dashed orange; }
+    .scrolly__narrative { outline: 2px solid blue; }
+    /* /DEBUG */
     .scrolly__narrative { padding: 0 1.5rem; }
     .step {
       min-height: 90vh;
@@ -126,12 +131,20 @@
     @media (min-width: 1024px) {
       .scrolly {
         display: grid;
-        grid-template-columns: minmax(0, 1fr) minmax(0, 1.42fr);
+        /* Both columns hug their content (text block + figure) and the grid is
+           centred, so the text + figure pair sits centred as a unit with a
+           constant gap and no empty slack inside either column. */
+        grid-template-columns: auto auto;
+        justify-content: center;
         column-gap: 2rem;
         align-items: start;
       }
       .scrolly__stage { grid-column: 2; grid-row: 1; }
-      .scrolly__narrative { grid-column: 1; grid-row: 1; padding: 0 0 0 1.5rem; }
+      .scrolly__narrative {
+        grid-column: 1; grid-row: 1;
+        padding: 0 0 0 1.5rem;
+        max-width: 34rem;      /* wrap the text to a tidy block the column hugs */
+      }
     }
 
     /* Below tablet width AND clearly PORTRAIT (taller than wide): the
