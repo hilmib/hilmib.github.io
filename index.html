@@ -26,8 +26,8 @@
     /* Base page background sits behind the backdrop canvas.
        Defined here (not via a dark: utility) because the .dark class lives
        on <html> itself, which Tailwind's dark: variant cannot target. */
-    html { background-color: #f8fafc; }      /* slate-50 */
-    html.dark { background-color: #0f172a; } /* slate-900 */
+    html { background-color: #f6f8fb; }
+    html.dark { background-color: #0d1626; }
     /* Fade-in-up animation */
     .fade-in-up {
       opacity: 0;
@@ -59,6 +59,23 @@
       color: #fff;
     }
     .opt-active i { color: #fff; }
+
+    #header {
+      background-color: rgba(255, 255, 255, 0.88);
+      border-color: rgba(203, 213, 225, 0.72);
+    }
+    html.dark #header {
+      background-color: rgba(13, 22, 38, 0.88);
+      border-color: rgba(71, 85, 105, 0.72);
+    }
+    #projects .group {
+      border-color: rgba(203, 213, 225, 0.95);
+      box-shadow: 0 18px 42px rgba(15, 23, 42, 0.08), 0 3px 10px rgba(15, 23, 42, 0.05);
+    }
+    html.dark #projects .group {
+      border-color: rgba(71, 85, 105, 0.86);
+      box-shadow: 0 20px 48px rgba(0, 0, 0, 0.24), 0 3px 12px rgba(0, 0, 0, 0.16);
+    }
 
     /* ─── Scrollytelling: sticky stage + narrative steps ─── */
     :root { --header-h: 3.5rem; }
@@ -101,17 +118,19 @@
       text-align: center;
       padding: 1.75rem 1.25rem;
       border-radius: 1.25rem;
-      border: 1px dashed rgba(148, 163, 184, 0.4);
-      background: rgba(37, 99, 235, 0.04);
-      color: #475569;
+      border: 1px solid rgba(37, 99, 235, 0.16);
+      background: rgba(37, 99, 235, 0.055);
+      color: #334155;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65), 0 10px 30px rgba(37, 99, 235, 0.055);
     }
     html.dark .rotate-hint {
-      border-color: rgba(148, 163, 184, 0.28);
-      background: rgba(96, 165, 250, 0.06);
-      color: #94a3b8;
+      border-color: rgba(96, 165, 250, 0.24);
+      background: rgba(96, 165, 250, 0.085);
+      color: #cbd5e1;
+      box-shadow: inset 0 1px 0 rgba(148, 163, 184, 0.08), 0 10px 30px rgba(0, 0, 0, 0.14);
     }
     .rotate-hint__icon {
-      width: 30px; height: 30px; color: #2563eb; transform-origin: 50% 50%;
+      width: 32px; height: 32px; color: #2563eb; transform-origin: 50% 50%;
       animation: rotate-hint-rock 2.4s ease-in-out infinite;
     }
     .rotate-hint p { margin: 0; font-size: 0.9rem; line-height: 1.45; max-width: 20rem; }
@@ -185,6 +204,11 @@
       .scrolly__narrative { grid-column: 1; grid-row: 1; padding: 0 0 0 0.5rem; }
       .step { min-height: 86vh; padding-top: 0; padding-bottom: 0; }
       .step:first-child { padding-top: 0; }
+      #hero .step__inner > p:first-child { margin-bottom: 0.55rem; }
+      #hero h1 { font-size: clamp(2.35rem, 6vw, 3rem); line-height: 1.04; margin-bottom: 0.75rem; }
+      #hero .step__inner > .text-xl { font-size: clamp(1.12rem, 2.8vw, 1.3rem); line-height: 1.25; margin-bottom: 0.85rem; }
+      #hero .step__inner > .text-base { font-size: clamp(0.95rem, 2vw, 1.05rem); line-height: 1.5; margin-bottom: 1.35rem; }
+      #hero .specimen-scroll-cue { margin-top: 1.35rem; }
     }
 
     @media (prefers-reduced-motion: reduce) {

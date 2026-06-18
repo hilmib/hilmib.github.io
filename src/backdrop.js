@@ -286,20 +286,20 @@
   function palette() {
     var dark = isDark();
     return {
-      soil: dark ? 'rgba(190,170,128,0.08)' : 'rgba(176,150,112,0.13)',
-      mesh: dark ? 'rgba(148,163,184,0.18)' : 'rgba(120,113,108,0.20)',
-      line: dark ? 'rgba(148,163,184,0.50)' : 'rgba(87,83,78,0.45)',
-      grid: dark ? 'rgba(148,163,184,0.22)' : 'rgba(71,85,105,0.18)',
-      platen: dark ? 'rgba(148,163,184,0.45)' : 'rgba(71,85,105,0.42)',
-      axial: dark ? 'rgba(96,165,250,0.78)' : 'rgba(37,99,235,0.68)',
-      confine: dark ? 'rgba(52,211,153,0.72)' : 'rgba(16,185,129,0.62)',
-      band: dark ? 'rgba(248,113,113,0.60)' : 'rgba(192,57,43,0.55)',
-      vol: dark ? 'rgba(56,189,248,0.62)' : 'rgba(2,132,199,0.55)',
-      label: dark ? 'rgba(148,163,184,0.68)' : 'rgba(71,85,105,0.62)',
+      soil: dark ? 'rgba(190,170,128,0.10)' : 'rgba(176,150,112,0.16)',
+      mesh: dark ? 'rgba(148,163,184,0.24)' : 'rgba(120,113,108,0.28)',
+      line: dark ? 'rgba(203,213,225,0.58)' : 'rgba(71,85,105,0.56)',
+      grid: dark ? 'rgba(148,163,184,0.32)' : 'rgba(71,85,105,0.28)',
+      platen: dark ? 'rgba(203,213,225,0.56)' : 'rgba(71,85,105,0.50)',
+      axial: dark ? 'rgba(96,165,250,0.88)' : 'rgba(37,99,235,0.76)',
+      confine: dark ? 'rgba(52,211,153,0.82)' : 'rgba(5,150,105,0.70)',
+      band: dark ? 'rgba(248,113,113,0.68)' : 'rgba(185,28,28,0.62)',
+      vol: dark ? 'rgba(56,189,248,0.76)' : 'rgba(2,132,199,0.68)',
+      label: dark ? 'rgba(203,213,225,0.76)' : 'rgba(51,65,85,0.76)',
       bandFill: function (a) {
         return dark
-          ? 'rgba(248,113,113,' + (0.55 * a).toFixed(3) + ')'
-          : 'rgba(192,57,43,' + (0.5 * a).toFixed(3) + ')';
+          ? 'rgba(248,113,113,' + (0.62 * a).toFixed(3) + ')'
+          : 'rgba(185,28,28,' + (0.56 * a).toFixed(3) + ')';
       },
       // Machined steel, top-lit (vertical) — for end platens, collar, cap nut.
       steelV: function (yTop, yBot) {
