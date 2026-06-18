@@ -69,22 +69,12 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 1.25rem;
+      padding: 0.5rem;
     }
     .stage-frame {
       position: relative;
       width: 100%;
       height: 82vh;
-      border-radius: 1.5rem;
-      overflow: hidden;
-      border: 1px solid rgba(148, 163, 184, 0.16);
-      background: radial-gradient(120% 100% at 72% 28%, rgba(37, 99, 235, 0.05), transparent 62%);
-      box-shadow: 0 1px 40px -12px rgba(37, 99, 235, 0.10);
-    }
-    html.dark .stage-frame {
-      border-color: rgba(148, 163, 184, 0.12);
-      background: radial-gradient(120% 100% at 72% 28%, rgba(96, 165, 250, 0.07), transparent 62%);
-      box-shadow: 0 1px 50px -12px rgba(2, 6, 23, 0.55);
     }
     .scrolly__narrative { padding: 0 1.5rem; }
     .step {
@@ -136,8 +126,8 @@
     @media (min-width: 1024px) {
       .scrolly {
         display: grid;
-        grid-template-columns: minmax(0, 1fr) minmax(0, 1.12fr);
-        column-gap: 2.5rem;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1.42fr);
+        column-gap: 2rem;
         align-items: start;
       }
       .scrolly__stage { grid-column: 2; grid-row: 1; }
@@ -183,19 +173,11 @@
     }
 
     /* Touch device held in PORTRAIT: the specimen view can't fit beside the
-       text, so hide it and invite the reader to rotate to landscape instead. */
+       text, so hide the stage and invite the reader to rotate to landscape
+       instead. The prompt sits in the narrative flow, below the hero intro. */
     @media (pointer: coarse) and (orientation: portrait) {
-      .scrolly__stage {
-        position: static;
-        height: auto;
-        top: auto;
-        z-index: auto;
-        padding: 0.5rem 0 0;
-        background: transparent;
-      }
-      html.dark .scrolly__stage { background: transparent; }
-      .scrolly__stage .stage-frame { display: none; }
-      .rotate-hint { display: flex; }
+      .scrolly__stage { display: none; }
+      .rotate-hint { display: flex; margin: 0 0 1.75rem; }
       .step:first-child { padding-top: 1.5rem; }
     }
 
@@ -253,7 +235,7 @@
   </header>
 
   <!-- ─── Scrollytelling: the biaxial test as centerpiece ─── -->
-  <div class="scrolly-wrap max-w-6xl mx-auto px-2 sm:px-6">
+  <div class="scrolly-wrap max-w-7xl mx-auto px-2 sm:px-6">
     <div class="scrolly">
 
       <!-- Sticky stage (the centerpiece graphic) -->
@@ -261,15 +243,17 @@
         <div class="stage-frame" aria-hidden="true">
           <canvas id="backdrop" class="block w-full h-full"></canvas>
         </div>
-        <!-- Shown only on touch devices held in portrait (see CSS) -->
-        <div class="rotate-hint" role="note">
-          <i data-lucide="rotate-cw" class="rotate-hint__icon"></i>
-          <p><span class="rotate-hint__label">Rotate your device</span>to view the interactive biaxial-test animation.</p>
-        </div>
       </aside>
 
       <!-- Narrative steps — each drives the specimen to a target axial strain -->
       <div class="scrolly__narrative">
+
+        <!-- Shown only on touch devices held in portrait (see CSS): the
+             side-by-side specimen view can't fit, so prompt to rotate. -->
+        <div class="rotate-hint" role="note">
+          <i data-lucide="rotate-cw" class="rotate-hint__icon"></i>
+          <p><span class="rotate-hint__label">Rotate your device</span>to view the interactive biaxial-test animation.</p>
+        </div>
 
         <!-- Hero -->
         <section id="hero" class="step" data-strain="0">

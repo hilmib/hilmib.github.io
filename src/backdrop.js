@@ -255,7 +255,15 @@
     // boldly and centred (narrative text lives in the separate column).
     var H0 = Math.max(160, Math.min(H * 0.56, 470));
     var W0 = H0 * 0.5; // ~2:1 height-to-width prismatic biaxial sample
-    var cx = W * 0.5;
+    // On a wide canvas the specimen sits LEFT of centre so the stress–strain
+    // plot can sit beside it on the right; otherwise centred. Touch devices in
+    // landscape get the same side-by-side treatment even though the split
+    // stage canvas is narrower than a desktop one.
+    var wide = W >= 600 ||
+      (typeof matchMedia === 'function' &&
+       matchMedia('(pointer: coarse) and (orientation: landscape)').matches &&
+       W >= 340);
+    var cx = wide ? W * 0.30 : W * 0.5;
     var baseY = H * 0.5 + H0 / 2; // fixed pedestal (bottom); top platen descends
 
     var phiDeg = 34;
@@ -462,8 +470,12 @@
 
     ctx.restore();
 
-    // Stress–strain inset (q–εa with εv overlay)
-    drawStressStrainInset(p, epsPct, epsMaxPct, narrow);
+    // Stress–strain inset (q–εa with εv overlay). On wide canvases it sits to
+    // the RIGHT of the specimen; plotX is the left edge of that free zone.
+    // The gap is tighter on narrow (mobile-landscape) canvases where space
+    // is at a premium.
+    var plotX = cx + W0 * 0.58 + (narrow ? 56 : 80);
+    drawStressStrainInset(p, epsPct, epsMaxPct, narrow, wide, plotX);
   }
 
   // Volumetric strain (ratio) vs axial strain (%). Dense-soil response,
@@ -504,11 +516,24 @@
     return rres + (1 - rres) * Math.exp(-(epsPct - peak) * 0.22);
   }
 
-  function drawStressStrainInset(p, epsPct, epsMaxPct, narrow) {
-    var bw = narrow ? 120 : 168;
-    var bh = narrow ? 88 : 116;
-    var bx = narrow ? 18 : 40;
-    var by = H - bh - (narrow ? 18 : 40);
+  function drawStressStrainInset(p, epsPct, epsMaxPct, narrow, wide, plotX) {
+    var bx, by, bw, bh;
+    if (wide) {
+      // Desktop: the specimen sits left-of-centre, so the plot lives in the
+      // free space to its RIGHT (plotX), vertically centred — never overlapping.
+      var rightMargin = Math.round(W * 0.045);
+      bw = Math.round(Math.min(260, W - plotX - rightMargin));
+      bh = Math.round(Math.min(280, Math.max(150, H * 0.34)));
+      bx = Math.round(plotX);
+      by = Math.round((H - bh) / 2);
+    } else {
+      // Narrow / mobile: tuck a compact plot into the bottom-left corner.
+      var pad = Math.max(14, Math.round(W * 0.045));
+      bw = Math.round(Math.min(190, Math.max(110, W * 0.42)));
+      bh = Math.round(Math.min(150, Math.max(86, H * 0.30)));
+      bx = pad;
+      by = H - bh - pad;
+    }
 
     ctx.save();
     ctx.globalAlpha = narrow ? 0.72 : 0.96;
