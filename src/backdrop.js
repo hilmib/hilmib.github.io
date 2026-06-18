@@ -450,23 +450,27 @@
     // deformed boundary nodes so they always sit just outside the bulged and
     // sheared edge (never inside the specimen at full deformation).
     var fr = [0.25, 0.5, 0.75];
-    var lblX = cx + curW / 2 + 34, lblY = baseY - curH * 0.5 + 4;
+    var s3X = cx + curW / 2 + 17, s3Y = baseY - curH * 0.5; // shaft midpoint of the middle σ3 arrow
     for (var fi = 0; fi < 3; fi++) {
       var rr = Math.round(fr[fi] * rows);
       var ln = nodes[rr][0];      // left boundary node
       var rn = nodes[rr][cols];   // right boundary node
       arrow(ln.x - 28, ln.y, ln.x - 6, ln.y, 6, p.confine, 1.5);
       arrow(rn.x + 28, rn.y, rn.x + 6, rn.y, 6, p.confine, 1.5);
-      if (fi === 1) { lblX = rn.x + 34; lblY = rn.y + 4; }
+      if (fi === 1) { s3X = rn.x + 17; s3Y = rn.y; }
     }
 
-    // Labels
+    // Labels — σ1 centred to the LEFT of the vertical (blue) piston arrow,
+    // σ3 centred ABOVE the middle horizontal (green) confining arrow.
     ctx.fillStyle = p.label;
     ctx.font = '500 16px "JetBrains Mono", monospace';
+    ctx.textAlign = 'right';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('σ\u2081', cx - 10, nutTopY - 10 - aLen / 2);
     ctx.textAlign = 'center';
-    ctx.fillText('σ\u2081', cx, nutTopY - 10 - aLen - 8);
-    ctx.textAlign = 'left';
-    ctx.fillText('σ\u2083', lblX, lblY);
+    ctx.textBaseline = 'bottom';
+    ctx.fillText('σ\u2083', s3X, s3Y - 8);
+    ctx.textBaseline = 'alphabetic';
 
     ctx.restore();
 
@@ -525,14 +529,14 @@
       // specimen base (baseAlignY) so the two read as one coherent figure.
       var rightMargin = Math.round(W * 0.045);
       bw = Math.round(Math.min(260, W - plotX - rightMargin));
-      bh = Math.round(Math.min(280, Math.max(150, H * 0.34)));
+      bh = Math.round(bw * 0.8); // fixed aspect ratio: y-axis = 0.8 × x-axis
       bx = Math.round(plotX);
       by = Math.round(baseAlignY - bh);
     } else {
       // Narrow / mobile: tuck a compact plot into the bottom-left corner.
       var pad = Math.max(14, Math.round(W * 0.045));
       bw = Math.round(Math.min(190, Math.max(110, W * 0.42)));
-      bh = Math.round(Math.min(150, Math.max(86, H * 0.30)));
+      bh = Math.round(bw * 0.8); // fixed aspect ratio: y-axis = 0.8 × x-axis
       bx = pad;
       by = H - bh - pad;
     }
