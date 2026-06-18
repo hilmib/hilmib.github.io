@@ -91,8 +91,11 @@
     } else {
       // On the mobile stacked layout the sticky stage occupies the top of
       // the viewport, so track a point lower down where the active step's
-      // text actually sits; on desktop the two columns share the centre.
-      var focusFrac = window.innerWidth < 1024 ? 0.72 : 0.5;
+      // text actually sits; on any side-by-side layout the columns share
+      // the centre.
+      var sideBySide = window.matchMedia('(min-width: 1024px)').matches ||
+        window.matchMedia('(pointer: coarse) and (orientation: landscape)').matches;
+      var focusFrac = sideBySide ? 0.5 : 0.72;
       var focus = window.scrollY + window.innerHeight * focusFrac;
       var prevC = null, prevS = 0, strain = null;
       for (var i = 0; i < stepEls.length; i++) {
@@ -203,7 +206,36 @@
         return dark
           ? 'rgba(248,113,113,' + (0.55 * a).toFixed(3) + ')'
           : 'rgba(192,57,43,' + (0.5 * a).toFixed(3) + ')';
-      }
+      },
+      // Machined steel, top-lit (vertical) — for end platens, collar, cap nut.
+      steelV: function (yTop, yBot) {
+        var g = ctx.createLinearGradient(0, yTop, 0, yBot);
+        if (dark) {
+          g.addColorStop(0, 'rgba(203,213,225,0.96)');
+          g.addColorStop(0.45, 'rgba(148,163,184,0.92)');
+          g.addColorStop(1, 'rgba(71,85,105,0.96)');
+        } else {
+          g.addColorStop(0, 'rgba(241,245,249,0.98)');
+          g.addColorStop(0.45, 'rgba(203,213,225,0.95)');
+          g.addColorStop(1, 'rgba(100,116,139,0.96)');
+        }
+        return g;
+      },
+      // Cylindrical highlight (horizontal) — for the round loading-piston shaft.
+      steelH: function (xLeft, xRight) {
+        var g = ctx.createLinearGradient(xLeft, 0, xRight, 0);
+        if (dark) {
+          g.addColorStop(0, 'rgba(71,85,105,0.96)');
+          g.addColorStop(0.5, 'rgba(203,213,225,0.96)');
+          g.addColorStop(1, 'rgba(71,85,105,0.96)');
+        } else {
+          g.addColorStop(0, 'rgba(100,116,139,0.96)');
+          g.addColorStop(0.5, 'rgba(241,245,249,0.98)');
+          g.addColorStop(1, 'rgba(100,116,139,0.96)');
+        }
+        return g;
+      },
+      pedestal: dark ? 'rgba(51,65,85,0.95)' : 'rgba(71,85,105,0.92)'
     };
   }
 
@@ -298,14 +330,47 @@
     ctx.save();
     ctx.globalAlpha = narrow ? 0.8 : 0.96;
 
-    // Loading platens (top descends with strain, bottom fixed) + ram.
-    ctx.fillStyle = p.platen;
-    roundRect(cx - curW * 0.62 - 6, topY - 12, curW * 1.24 + 12, 10, 3);
+    // ── End platens + loading piston (biaxial cell hardware) ──
+    var capW = curW * 1.06 + 4;           // end-plate width (just over specimen)
+    var capX = cx - capW / 2;
+    var plateH = 12;                      // end-plate thickness
+    var ramLen = Math.min(21, H * 0.03);  // piston shaft length
+    var collarH = 4, collarW = 18;        // shaft collar
+    var nutH = 9, nutW = 30;              // piston cap / nut head
+    var shaftTop = topY - plateH - ramLen;
+    var nutTopY = shaftTop - collarH - nutH;
+    var baseH = 14;                       // pedestal base block
+    var pedBottomY = baseY + plateH + baseH;
+
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = p.line;
+
+    // Top end platen (descends with the applied axial strain).
+    ctx.fillStyle = p.steelV(topY - plateH, topY);
+    roundRect(capX, topY - plateH, capW, plateH, 3);
     ctx.fill();
-    roundRect(cx - curW * 0.62 - 6, baseY + 2, curW * 1.24 + 12, 10, 3);
+    ctx.stroke();
+
+    // Loading piston: cylindrical shaft + collar + cap nut.
+    ctx.fillStyle = p.steelH(cx - 5, cx + 5);
+    ctx.fillRect(cx - 5, shaftTop, 10, ramLen);
+    ctx.fillStyle = p.steelV(shaftTop - collarH, shaftTop);
+    roundRect(cx - collarW / 2, shaftTop - collarH, collarW, collarH, 1.5);
     ctx.fill();
-    var ramLen = Math.min(34, H * 0.05);
-    ctx.fillRect(cx - 4, topY - 12 - ramLen, 8, ramLen);
+    ctx.fillStyle = p.steelV(nutTopY, shaftTop - collarH);
+    roundRect(cx - nutW / 2, nutTopY, nutW, nutH, 2);
+    ctx.fill();
+    ctx.stroke();
+
+    // Bottom end platen (fixed) over a heavier pedestal base.
+    ctx.fillStyle = p.steelV(baseY, baseY + plateH);
+    roundRect(capX, baseY, capW, plateH, 3);
+    ctx.fill();
+    ctx.stroke();
+    ctx.fillStyle = p.pedestal;
+    roundRect(cx - (capW + 8) / 2, baseY + plateH, capW + 8, baseH, 2);
+    ctx.fill();
+    ctx.stroke();
 
     // Specimen body fill (boundary loop of the mesh)
     ctx.beginPath();
@@ -366,43 +431,34 @@
     for (var r7 = 1; r7 <= rows; r7++) ctx.lineTo(nodes[r7][cols].x, nodes[r7][cols].y);
     ctx.stroke();
 
-    // Failure plane (dashed) once localized
-    if (loc > 0) {
-      var L = curW * 0.95;
-      ctx.save();
-      ctx.globalAlpha = ctx.globalAlpha * (0.4 + 0.6 * loc);
-      ctx.strokeStyle = p.band;
-      ctx.lineWidth = 1.5;
-      ctx.setLineDash([6, 4]);
-      ctx.beginPath();
-      ctx.moveTo(planeCx - L * dx, planeCy - L * dy);
-      ctx.lineTo(planeCx + L * dx, planeCy + L * dy);
-      ctx.stroke();
-      ctx.setLineDash([]);
-      ctx.restore();
-    }
 
-    // Axial stress arrows (σ1), grow with load
+    // Axial stress arrows (σ1), grow with load — applied through the piston
+    // cap (top) and resisted at the pedestal base (bottom).
     var aLen = lerp(16, 38, t);
-    arrow(cx, topY - 12 - aLen, cx, topY - 12, 7, p.axial, 2);
-    arrow(cx, baseY + 12 + aLen, cx, baseY + 12, 7, p.axial, 2);
+    arrow(cx, nutTopY - 10 - aLen, cx, nutTopY - 10, 7, p.axial, 2);
+    arrow(cx, pedBottomY + 10 + aLen, cx, pedBottomY + 10, 7, p.axial, 2);
 
-    // Lateral confining stress arrows (σ3), constant — follow the bulged edge
+    // Lateral confining stress arrows (σ3), constant — anchored to the ACTUAL
+    // deformed boundary nodes so they always sit just outside the bulged and
+    // sheared edge (never inside the specimen at full deformation).
     var fr = [0.25, 0.5, 0.75];
+    var lblX = cx + curW / 2 + 34, lblY = baseY - curH * 0.5 + 4;
     for (var fi = 0; fi < 3; fi++) {
-      var yy = baseY - curH * fr[fi];
-      var edge = (curW / 2) * (1 + 0.16 * Math.sin(Math.PI * fr[fi]) * (epsPct / epsMaxPct));
-      arrow(cx - edge - 28, yy, cx - edge - 6, yy, 6, p.confine, 1.5);
-      arrow(cx + edge + 28, yy, cx + edge + 6, yy, 6, p.confine, 1.5);
+      var rr = Math.round(fr[fi] * rows);
+      var ln = nodes[rr][0];      // left boundary node
+      var rn = nodes[rr][cols];   // right boundary node
+      arrow(ln.x - 28, ln.y, ln.x - 6, ln.y, 6, p.confine, 1.5);
+      arrow(rn.x + 28, rn.y, rn.x + 6, rn.y, 6, p.confine, 1.5);
+      if (fi === 1) { lblX = rn.x + 34; lblY = rn.y + 4; }
     }
 
     // Labels
     ctx.fillStyle = p.label;
     ctx.font = '500 13px "JetBrains Mono", monospace';
     ctx.textAlign = 'center';
-    ctx.fillText('σ\u2081', cx, topY - 12 - aLen - 8);
+    ctx.fillText('σ\u2081', cx, nutTopY - 10 - aLen - 8);
     ctx.textAlign = 'left';
-    ctx.fillText('σ\u2083', cx + curW / 2 + 32, baseY - curH * 0.5 + 4);
+    ctx.fillText('σ\u2083', lblX, lblY);
 
     ctx.restore();
 
@@ -457,12 +513,19 @@
     ctx.save();
     ctx.globalAlpha = narrow ? 0.72 : 0.96;
 
-    // axes
+    // axes (left = q, bottom = εa)
     ctx.strokeStyle = p.grid;
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(bx, by);
     ctx.lineTo(bx, by + bh);
+    ctx.lineTo(bx + bw, by + bh);
+    ctx.stroke();
+
+    // secondary right axis for the dashed volumetric-strain curve
+    ctx.strokeStyle = p.vol;
+    ctx.beginPath();
+    ctx.moveTo(bx + bw, by);
     ctx.lineTo(bx + bw, by + bh);
     ctx.stroke();
 
@@ -494,6 +557,7 @@
     ctx.setLineDash([4, 3]);
     ctx.beginPath();
     var vMin = -1.2, vMax = 3.2;
+    var vx = bx, vy = by + bh;
     for (var j = 0; j <= steps; j++) {
       var e2 = (j / steps) * curEps;
       var v = volStrainRatio(e2) * 100;
@@ -502,16 +566,22 @@
       var y2 = by + bh - vn * (bh - 12) * 0.5;
       if (j === 0) ctx.moveTo(x2, y2);
       else ctx.lineTo(x2, y2);
+      vx = x2;
+      vy = y2;
     }
     ctx.stroke();
     ctx.setLineDash([]);
     ctx.restore();
 
-    // current-state marker on the q curve
+    // current-state markers: solid on the q curve, hollow on the εv curve
     if (epsPct > 0.1) {
       ctx.fillStyle = p.band;
       ctx.beginPath();
       ctx.arc(qx, qy, 3, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = p.vol;
+      ctx.beginPath();
+      ctx.arc(vx, vy, 3, 0, Math.PI * 2);
       ctx.fill();
     }
 
@@ -520,8 +590,12 @@
     ctx.font = '500 11px "JetBrains Mono", monospace';
     ctx.textAlign = 'left';
     ctx.fillText('q', bx - 2, by - 6);
+    ctx.textAlign = 'center';
+    ctx.fillText('\u03b5\u2090', bx + bw / 2, by + bh + 14);
+    // secondary axis label (volumetric strain εv)
+    ctx.fillStyle = p.vol;
     ctx.textAlign = 'right';
-    ctx.fillText('\u03b5\u2090', bx + bw, by + bh + 14);
+    ctx.fillText('\u03b5\u1d65', bx + bw + 2, by - 6);
     ctx.restore();
   }
 
@@ -565,6 +639,11 @@
 
   window.addEventListener('resize', resize, { passive: true });
   window.addEventListener('scroll', onScroll, { passive: true });
+  // Some mobile browsers fire 'orientationchange' before the new viewport
+  // metrics settle, so re-measure on the next frame as well.
+  window.addEventListener('orientationchange', function () {
+    requestAnimationFrame(resize);
+  }, { passive: true });
   document.addEventListener('visibilitychange', onVisibility);
 
   window.Backdrop = { setMode: setMode, getMode: getMode };

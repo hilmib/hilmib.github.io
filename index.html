@@ -95,6 +95,39 @@
     }
     .step__inner { width: 100%; }
 
+    /* Rotate prompt — shown only on touch devices held in portrait, where the
+       side-by-side specimen view can't fit (see media query below). */
+    .rotate-hint {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.85rem;
+      text-align: center;
+      padding: 1.75rem 1.25rem;
+      border-radius: 1.25rem;
+      border: 1px dashed rgba(148, 163, 184, 0.4);
+      background: rgba(37, 99, 235, 0.04);
+      color: #475569;
+    }
+    html.dark .rotate-hint {
+      border-color: rgba(148, 163, 184, 0.28);
+      background: rgba(96, 165, 250, 0.06);
+      color: #94a3b8;
+    }
+    .rotate-hint__icon {
+      width: 30px; height: 30px; color: #2563eb; transform-origin: 50% 50%;
+      animation: rotate-hint-rock 2.4s ease-in-out infinite;
+    }
+    .rotate-hint p { margin: 0; font-size: 0.9rem; line-height: 1.45; max-width: 20rem; }
+    .rotate-hint__label { display: block; font-weight: 600; color: #334155; margin-bottom: 0.15rem; }
+    html.dark .rotate-hint__label { color: #e2e8f0; }
+    @keyframes rotate-hint-rock {
+      0%, 18% { transform: rotate(-12deg); }
+      50%, 68% { transform: rotate(78deg); }
+      100% { transform: rotate(-12deg); }
+    }
+
     /* Backdrop turned off → reclaim the stage column */
     .stage-hidden .scrolly__stage { display: none; }
     .stage-hidden .scrolly { display: block; }
@@ -126,8 +159,49 @@
       .step:first-child { padding-top: 1rem; }
     }
 
+    /* Touch device in LANDSCAPE: there's room for the desktop-style split, so
+       put the specimen back on the side (full height) instead of a top strip. */
+    @media (pointer: coarse) and (orientation: landscape) {
+      .scrolly {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+        column-gap: 1.5rem;
+        align-items: start;
+      }
+      .scrolly__stage {
+        grid-column: 2; grid-row: 1;
+        position: sticky; top: 3.5rem;
+        height: calc(100vh - 3.5rem);
+        z-index: auto;
+        padding: 0.75rem;
+        background: transparent;
+      }
+      html.dark .scrolly__stage { background: transparent; }
+      .scrolly__narrative { grid-column: 1; grid-row: 1; padding: 0 0 0 0.5rem; }
+      .step { min-height: 86vh; padding-top: 0; padding-bottom: 0; }
+      .step:first-child { padding-top: 0; }
+    }
+
+    /* Touch device held in PORTRAIT: the specimen view can't fit beside the
+       text, so hide it and invite the reader to rotate to landscape instead. */
+    @media (pointer: coarse) and (orientation: portrait) {
+      .scrolly__stage {
+        position: static;
+        height: auto;
+        top: auto;
+        z-index: auto;
+        padding: 0.5rem 0 0;
+        background: transparent;
+      }
+      html.dark .scrolly__stage { background: transparent; }
+      .scrolly__stage .stage-frame { display: none; }
+      .rotate-hint { display: flex; }
+      .step:first-child { padding-top: 1.5rem; }
+    }
+
     @media (prefers-reduced-motion: reduce) {
       .scrolly__stage { position: sticky; }
+      .rotate-hint__icon { animation: none; transform: rotate(35deg); }
     }
   </style>
 </head>
@@ -183,9 +257,14 @@
     <div class="scrolly">
 
       <!-- Sticky stage (the centerpiece graphic) -->
-      <aside class="scrolly__stage" aria-hidden="true">
-        <div class="stage-frame">
+      <aside class="scrolly__stage">
+        <div class="stage-frame" aria-hidden="true">
           <canvas id="backdrop" class="block w-full h-full"></canvas>
+        </div>
+        <!-- Shown only on touch devices held in portrait (see CSS) -->
+        <div class="rotate-hint" role="note">
+          <i data-lucide="rotate-cw" class="rotate-hint__icon"></i>
+          <p><span class="rotate-hint__label">Rotate your device</span>to view the interactive biaxial-test animation.</p>
         </div>
       </aside>
 
