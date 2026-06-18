@@ -440,11 +440,10 @@
     ctx.stroke();
 
 
-    // Axial stress arrows (σ1), grow with load — applied through the piston
-    // cap (top) and resisted at the pedestal base (bottom).
+    // Axial stress arrow (σ1), grows with load — applied through the piston
+    // cap at the top (the pedestal base reaction is implied, not drawn).
     var aLen = lerp(16, 38, t);
     arrow(cx, nutTopY - 10 - aLen, cx, nutTopY - 10, 7, p.axial, 2);
-    arrow(cx, pedBottomY + 10 + aLen, cx, pedBottomY + 10, 7, p.axial, 2);
 
     // Lateral confining stress arrows (σ3), constant — anchored to the ACTUAL
     // deformed boundary nodes so they always sit just outside the bulged and
@@ -462,7 +461,7 @@
 
     // Labels
     ctx.fillStyle = p.label;
-    ctx.font = '500 13px "JetBrains Mono", monospace';
+    ctx.font = '500 16px "JetBrains Mono", monospace';
     ctx.textAlign = 'center';
     ctx.fillText('σ\u2081', cx, nutTopY - 10 - aLen - 8);
     ctx.textAlign = 'left';
@@ -471,11 +470,12 @@
     ctx.restore();
 
     // Stress–strain inset (q–εa with εv overlay). On wide canvases it sits to
-    // the RIGHT of the specimen; plotX is the left edge of that free zone.
+    // the RIGHT of the specimen; plotX is the left edge of that free zone and
+    // baseY' (pedBottomY) aligns the plot's bottom axis with the specimen base.
     // The gap is tighter on narrow (mobile-landscape) canvases where space
     // is at a premium.
     var plotX = cx + W0 * 0.58 + (narrow ? 56 : 80);
-    drawStressStrainInset(p, epsPct, epsMaxPct, narrow, wide, plotX);
+    drawStressStrainInset(p, epsPct, epsMaxPct, narrow, wide, plotX, pedBottomY);
   }
 
   // Volumetric strain (ratio) vs axial strain (%). Dense-soil response,
@@ -516,16 +516,17 @@
     return rres + (1 - rres) * Math.exp(-(epsPct - peak) * 0.22);
   }
 
-  function drawStressStrainInset(p, epsPct, epsMaxPct, narrow, wide, plotX) {
+  function drawStressStrainInset(p, epsPct, epsMaxPct, narrow, wide, plotX, baseAlignY) {
     var bx, by, bw, bh;
     if (wide) {
       // Desktop: the specimen sits left-of-centre, so the plot lives in the
-      // free space to its RIGHT (plotX), vertically centred — never overlapping.
+      // free space to its RIGHT (plotX). Its bottom axis is aligned with the
+      // specimen base (baseAlignY) so the two read as one coherent figure.
       var rightMargin = Math.round(W * 0.045);
       bw = Math.round(Math.min(260, W - plotX - rightMargin));
       bh = Math.round(Math.min(280, Math.max(150, H * 0.34)));
       bx = Math.round(plotX);
-      by = Math.round((H - bh) / 2);
+      by = Math.round(baseAlignY - bh);
     } else {
       // Narrow / mobile: tuck a compact plot into the bottom-left corner.
       var pad = Math.max(14, Math.round(W * 0.045));
@@ -612,15 +613,15 @@
 
     // labels
     ctx.fillStyle = p.label;
-    ctx.font = '500 11px "JetBrains Mono", monospace';
+    ctx.font = '500 14px "JetBrains Mono", monospace';
     ctx.textAlign = 'left';
-    ctx.fillText('q', bx - 2, by - 6);
+    ctx.fillText('q', bx - 2, by - 7);
     ctx.textAlign = 'center';
-    ctx.fillText('\u03b5\u2090', bx + bw / 2, by + bh + 14);
+    ctx.fillText('\u03b5\u2090', bx + bw / 2, by + bh + 17);
     // secondary axis label (volumetric strain εv)
     ctx.fillStyle = p.vol;
     ctx.textAlign = 'right';
-    ctx.fillText('\u03b5\u1d65', bx + bw + 2, by - 6);
+    ctx.fillText('\u03b5\u1d65', bx + bw + 2, by - 7);
     ctx.restore();
   }
 
