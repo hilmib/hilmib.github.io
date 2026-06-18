@@ -606,7 +606,7 @@
 
     // current-state markers: solid on the q curve, hollow on the εv curve
     if (epsPct > 0.1) {
-      ctx.fillStyle = p.band;
+      ctx.fillStyle = p.axial;
       ctx.beginPath();
       ctx.arc(qx, qy, 3, 0, Math.PI * 2);
       ctx.fill();
