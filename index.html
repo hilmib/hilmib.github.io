@@ -134,24 +134,23 @@
       .scrolly__narrative { grid-column: 1; grid-row: 1; padding: 0 0 0 1.5rem; }
     }
 
-    @media (max-width: 1023px) {
-      .scrolly__stage {
-        height: 46vh;
-        top: 3.5rem;
-        padding: 0.75rem;
-        z-index: 20;
-        background: #f8fafc;
-      }
-      html.dark .scrolly__stage { background: #0f172a; }
-      .stage-frame { height: 100%; }
-      .scrolly__narrative { position: relative; z-index: 1; }
-      .step { min-height: auto; padding-top: 2.5rem; padding-bottom: 4rem; }
-      .step:first-child { padding-top: 1rem; }
+    /* Below tablet width AND clearly PORTRAIT (taller than wide): the
+       side-by-side specimen view can't fit, so hide the stage and invite the
+       reader to rotate to landscape. The prompt sits at the top of the
+       narrative flow. (A square viewport is handled by the rule below, which
+       keeps the specimen on the side — no rotate prompt.) */
+    @media (max-width: 1023px) and (max-aspect-ratio: 1/1) {
+      .scrolly__stage { display: none; }
+      .rotate-hint { display: flex; margin: 0 0 1.75rem; }
+      .step:first-child { padding-top: 1.5rem; }
     }
 
-    /* Touch device in LANDSCAPE: there's room for the desktop-style split, so
-       put the specimen back on the side (full height) instead of a top strip. */
-    @media (pointer: coarse) and (orientation: landscape) {
+    /* Below tablet width but the larger dimension is HORIZONTAL — landscape OR
+       square (aspect-ratio >= 1). There's room for the split, so keep the
+       specimen on the SIDE (never on top) in a compact full-height column.
+       Declared after the portrait rule so it wins for an exactly-square
+       viewport, explicitly restoring the stage and hiding the rotate prompt. */
+    @media (max-width: 1023px) and (min-aspect-ratio: 1/1) {
       .scrolly {
         display: grid;
         grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
@@ -159,6 +158,7 @@
         align-items: start;
       }
       .scrolly__stage {
+        display: flex;
         grid-column: 2; grid-row: 1;
         position: sticky; top: 3.5rem;
         height: calc(100vh - 3.5rem);
@@ -167,18 +167,10 @@
         background: transparent;
       }
       html.dark .scrolly__stage { background: transparent; }
+      .rotate-hint { display: none; }
       .scrolly__narrative { grid-column: 1; grid-row: 1; padding: 0 0 0 0.5rem; }
       .step { min-height: 86vh; padding-top: 0; padding-bottom: 0; }
       .step:first-child { padding-top: 0; }
-    }
-
-    /* Touch device held in PORTRAIT: the specimen view can't fit beside the
-       text, so hide the stage and invite the reader to rotate to landscape
-       instead. The prompt sits in the narrative flow, below the hero intro. */
-    @media (pointer: coarse) and (orientation: portrait) {
-      .scrolly__stage { display: none; }
-      .rotate-hint { display: flex; margin: 0 0 1.75rem; }
-      .step:first-child { padding-top: 1.5rem; }
     }
 
     @media (prefers-reduced-motion: reduce) {

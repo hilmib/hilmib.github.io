@@ -94,7 +94,7 @@
       // text actually sits; on any side-by-side layout the columns share
       // the centre.
       var sideBySide = window.matchMedia('(min-width: 1024px)').matches ||
-        window.matchMedia('(pointer: coarse) and (orientation: landscape)').matches;
+        window.matchMedia('(min-aspect-ratio: 1/1)').matches;
       var focusFrac = sideBySide ? 0.5 : 0.72;
       var focus = window.scrollY + window.innerHeight * focusFrac;
       var prevC = null, prevS = 0, strain = null;
@@ -256,13 +256,13 @@
     var H0 = Math.max(160, Math.min(H * 0.56, 470));
     var W0 = H0 * 0.5; // ~2:1 height-to-width prismatic biaxial sample
     // On a wide canvas the specimen sits LEFT of centre so the stress–strain
-    // plot can sit beside it on the right; otherwise centred. Touch devices in
-    // landscape ALWAYS get the side-by-side treatment — even on a small phone
+    // plot can sit beside it on the right; otherwise centred. Any landscape
+    // viewport ALWAYS gets the side-by-side treatment — even on a small phone
     // the split stage is too narrow to stack a corner plot without it landing
     // on top of the (centred) specimen, so we shift left and plot to the right.
     var wide = W >= 600 ||
       (typeof matchMedia === 'function' &&
-       matchMedia('(pointer: coarse) and (orientation: landscape)').matches &&
+       matchMedia('(min-aspect-ratio: 1/1)').matches &&
        W >= 240);
     var cx = wide ? W * 0.30 : W * 0.5;
     var baseY = H * 0.5 + H0 / 2; // fixed pedestal (bottom); top platen descends
