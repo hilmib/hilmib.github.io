@@ -61,11 +61,13 @@
     .opt-active i { color: #fff; }
 
     /* ─── Scrollytelling: sticky stage + narrative steps ─── */
-    .scrolly-wrap { padding-top: 3.5rem; }
+    :root { --header-h: 3.5rem; }
+    .scrolly-wrap { padding-top: var(--header-h); }
     .scrolly__stage {
       position: sticky;
-      top: 3.5rem;
-      height: calc(100vh - 3.5rem);
+      top: var(--header-h);
+      height: calc(100vh - var(--header-h));
+      height: calc(100dvh - var(--header-h));
       display: flex;
       align-items: center;
       justify-content: center;
@@ -75,12 +77,10 @@
       position: relative;
       width: 100%;
       height: 82vh;
+      height: 82dvh;
+      max-height: calc(100vh - var(--header-h) - 1rem);
+      max-height: calc(100dvh - var(--header-h) - 1rem);
     }
-    /* DEBUG: temporary layout outlines — remove later */
-    .stage-frame { outline: 2px solid red; }
-    #backdrop { outline: 2px dashed orange; }
-    .scrolly__narrative { outline: 2px solid blue; }
-    /* /DEBUG */
     .scrolly__narrative { padding: 0 1.5rem; }
     .step {
       min-height: 90vh;
@@ -90,8 +90,8 @@
     }
     .step__inner { width: 100%; }
 
-    /* Rotate prompt — shown only on touch devices held in portrait, where the
-       side-by-side specimen view can't fit (see media query below). */
+    /* Rotate prompt — shown only on touch devices held clearly in portrait,
+       where the side-by-side specimen view can't fit. */
     .rotate-hint {
       display: none;
       flex-direction: column;
@@ -131,9 +131,8 @@
     @media (min-width: 1024px) {
       .scrolly {
         display: grid;
-        /* Both columns hug their content (text block + figure) and the grid is
-           centred, so the text + figure pair sits centred as a unit with a
-           constant gap and no empty slack inside either column. */
+        /* The text column eases down near the desktop threshold so the figure
+          does not collapse abruptly at 1024px. */
         grid-template-columns: auto auto;
         justify-content: center;
         column-gap: 2rem;
@@ -143,27 +142,28 @@
       .scrolly__narrative {
         grid-column: 1; grid-row: 1;
         padding: 0 0 0 1.5rem;
-        max-width: 34rem;      /* wrap the text to a tidy block the column hugs */
+        width: clamp(26rem, 43vw, 34rem);
+        max-width: none;
       }
     }
 
-    /* Below tablet width AND clearly PORTRAIT (taller than wide): the
-       side-by-side specimen view can't fit, so hide the stage and invite the
-       reader to rotate to landscape. The prompt sits at the top of the
-       narrative flow. (A square viewport is handled by the rule below, which
-       keeps the specimen on the side — no rotate prompt.) */
-    @media (max-width: 1023px) and (max-aspect-ratio: 1/1) {
+    /* True small or tall-portrait layouts read as a single text column. */
+    @media (max-width: 599px), (max-width: 1023px) and (max-aspect-ratio: 4/5) {
       .scrolly__stage { display: none; }
       .rotate-hint { display: flex; margin: 0 0 1.75rem; }
+      .scrolly__narrative { padding: 0 1.5rem; }
+      .step {
+        min-height: auto;
+        padding: clamp(3rem, 10vh, 5rem) 0;
+        justify-content: flex-start;
+      }
+      .specimen-scroll-cue { display: none; }
       .step:first-child { padding-top: 1.5rem; }
     }
 
-    /* Below tablet width but the larger dimension is HORIZONTAL — landscape OR
-       square (aspect-ratio >= 1). There's room for the split, so keep the
-       specimen on the SIDE (never on top) in a compact full-height column.
-       Declared after the portrait rule so it wins for an exactly-square
-       viewport, explicitly restoring the stage and hiding the rotate prompt. */
-    @media (max-width: 1023px) and (min-aspect-ratio: 1/1) {
+    /* Below desktop, keep the specimen on the side when there is enough width
+       and the viewport is not a tall phone portrait. */
+    @media (min-width: 600px) and (max-width: 1023px) and (min-aspect-ratio: 4/5) {
       .scrolly {
         display: grid;
         grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
@@ -173,8 +173,9 @@
       .scrolly__stage {
         display: flex;
         grid-column: 2; grid-row: 1;
-        position: sticky; top: 3.5rem;
-        height: calc(100vh - 3.5rem);
+        position: sticky; top: var(--header-h);
+        height: calc(100vh - var(--header-h));
+        height: calc(100dvh - var(--header-h));
         z-index: auto;
         padding: 0.75rem;
         background: transparent;
@@ -283,7 +284,7 @@
                 Contact
               </a>
             </div>
-            <p class="fade-in-up mt-12 inline-flex items-center gap-2 text-xs font-mono text-slate-400 dark:text-slate-500">
+            <p class="specimen-scroll-cue fade-in-up mt-12 inline-flex items-center gap-2 text-xs font-mono text-slate-400 dark:text-slate-500">
               <i data-lucide="arrow-down" class="w-3.5 h-3.5"></i> Scroll to load the specimen
             </p>
           </div>

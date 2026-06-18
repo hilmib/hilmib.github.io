@@ -59,13 +59,17 @@
     return document.documentElement.classList.contains('dark');
   }
 
-  // True when the layout shows the specimen beside the narrative (desktop, or
-  // any landscape/square viewport). Mirrors the CSS media queries exactly so
-  // the canvas-sizing and the drawing agree on which regime we are in.
+  // True when the layout shows the specimen beside the narrative. Keep this in
+  // sync with the scrollytelling media queries in index.html.
   function isSideBySide() {
-    return typeof matchMedia === 'function' &&
-      (matchMedia('(min-width: 1024px)').matches ||
-       matchMedia('(min-aspect-ratio: 1/1)').matches);
+    if (document.body.classList.contains('stage-hidden')) return false;
+    if (typeof matchMedia !== 'function') return false;
+    return matchMedia('(min-width: 1024px)').matches ||
+      matchMedia('(min-width: 600px) and (max-width: 1023px) and (min-aspect-ratio: 4/5)').matches;
+  }
+
+  function isDesktopSplit() {
+    return typeof matchMedia === 'function' && matchMedia('(min-width: 1024px)').matches;
   }
 
   // ── Figure metrics: the specimen+plot cluster, driven purely by height ──
@@ -91,34 +95,55 @@
     return { H0: H0, W0: W0, cx: cx, plotX: plotX, plotW: plotW, figureW: figureW };
   }
 
-  // Constrain the sticky stage frame to the figure's natural width so the
-  // canvas hugs the specimen+plot exactly and its grid column (auto) shrinks to
-  // match. The text column then fills the rest, and because the wrapper is
-  // centred the text + figure pair reads as one centred unit with a constant
-  // gap. We clamp the figure width against the grid container (.scrolly) so a
-  // narrow viewport keeps a minimum text width instead of overflowing — the
-  // figure scales down to fit (see drawBiaxial). This applies ONLY to the
-  // desktop split (≥1024px). On the smaller landscape/square and the stacked
-  // portrait layouts the frame fills its grid column as before.
+  function heightForFigureWidth(targetW, maxH) {
+    var low = 180;
+    var high = Math.max(low, maxH);
+    for (var i = 0; i < 18; i++) {
+      var mid = (low + high) / 2;
+      if (biaxialMetrics(mid).figureW > targetW) high = mid;
+      else low = mid;
+    }
+    return Math.min(maxH, Math.max(260, high));
+  }
+
+  // Constrain the stage frame to the specimen+plot cluster. On desktop the
+  // frame gets the figure's natural width unless the text column needs room;
+  // on compact landscape it keeps the grid column width. In both cases, when
+  // width is the limiting dimension, the frame height is reduced as well so the
+  // canvas does not become a tall empty panel around a scaled-down figure.
   function fitFrame() {
     var frame = canvas.parentNode;        // .stage-frame
     if (!frame) return;
-    var desktopSplit = typeof matchMedia === 'function' &&
-      matchMedia('(min-width: 1024px)').matches;
-    if (!desktopSplit) {
-      frame.style.width = '';             // let it fill its grid column
+    frame.style.width = '';
+    frame.style.height = '';
+    if (!isSideBySide()) return;
+
+    var hPx = frame.getBoundingClientRect().height;
+    var naturalW = biaxialMetrics(hPx).figureW;
+
+    if (!isDesktopSplit()) {
+      var compactW = frame.getBoundingClientRect().width;
+      if (compactW > 0 && compactW < naturalW - 1) {
+        frame.style.height = heightForFigureWidth(compactW, hPx) + 'px';
+      }
       return;
     }
-    var hPx = frame.getBoundingClientRect().height; // 82vh, width-independent
-    var want = biaxialMetrics(hPx).figureW;
+
+    var targetW = naturalW;
     var container = document.querySelector('.scrolly'); // the grid box
-    if (container) {
-      var GAP = 32;        // column-gap (2rem)
-      var MIN_TEXT = 544;  // narrative max-width (34rem) — keep room for the text
-      var avail = container.clientWidth - GAP - MIN_TEXT;
-      if (avail > 0) want = Math.min(want, avail);
+    var narrative = document.querySelector('.scrolly__narrative');
+    if (container && narrative) {
+      var gap = parseFloat(getComputedStyle(container).columnGap) || 0;
+      var avail = container.clientWidth - gap - narrative.getBoundingClientRect().width;
+      if (avail > 0) targetW = Math.min(targetW, avail);
     }
-    frame.style.width = want + 'px';
+
+    var targetH = hPx;
+    if (targetW < naturalW - 1) {
+      targetH = heightForFigureWidth(targetW, hPx);
+      frame.style.height = targetH + 'px';
+    }
+    frame.style.width = Math.min(targetW, biaxialMetrics(targetH).figureW) + 'px';
   }
 
   // ── Sizing (DPR-capped for battery/perf) ──
@@ -133,7 +158,14 @@
     canvas.width = Math.round(W * dpr);
     canvas.height = Math.round(H * dpr);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    updateProgress();
+    if (mode === 'off' || !isSideBySide()) {
+      stop();
+      ctx.clearRect(0, 0, W, H);
+      return;
+    }
     render();
+    if (!document.hidden) start();
   }
 
   // ── Scroll → target strain → progress ──
@@ -156,8 +188,7 @@
       // the viewport, so track a point lower down where the active step's
       // text actually sits; on any side-by-side layout the columns share
       // the centre.
-      var sideBySide = window.matchMedia('(min-width: 1024px)').matches ||
-        window.matchMedia('(min-aspect-ratio: 1/1)').matches;
+      var sideBySide = isSideBySide();
       var focusFrac = sideBySide ? 0.5 : 0.72;
       var focus = window.scrollY + window.innerHeight * focusFrac;
       var prevC = null, prevS = 0, strain = null;
@@ -195,7 +226,7 @@
   }
 
   function start() {
-    if (mode === 'off') return;
+    if (mode === 'off' || !isSideBySide()) return;
     if (prefersReduced) {
       // Static representative frame, no continuous motion.
       render();
@@ -702,6 +733,7 @@
       return;
     }
     updateProgress();
+    if (!isSideBySide()) return;
     if (running) render();
     else start();
   }
@@ -713,6 +745,7 @@
   // ── Events ──
   function onScroll() {
     updateProgress();
+    if (mode === 'off' || !isSideBySide()) return;
     if (running) return; // continuous loop already redraws
     if (!scrollScheduled) {
       scrollScheduled = true;
