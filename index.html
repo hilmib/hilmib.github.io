@@ -148,7 +148,7 @@
     }
 
     /* True small or tall-portrait layouts read as a single text column. */
-    @media (max-width: 599px), (max-width: 1023px) and (max-aspect-ratio: 4/5) {
+    @media (max-width: 759px), (max-width: 1023px) and (max-aspect-ratio: 1/1) {
       .scrolly__stage { display: none; }
       .rotate-hint { display: flex; margin: 0 0 1.75rem; }
       .scrolly__narrative { padding: 0 1.5rem; }
@@ -163,7 +163,7 @@
 
     /* Below desktop, keep the specimen on the side when there is enough width
        and the viewport is not a tall phone portrait. */
-    @media (min-width: 600px) and (max-width: 1023px) and (min-aspect-ratio: 4/5) {
+    @media (min-width: 760px) and (max-width: 1023px) and (min-aspect-ratio: 1/1) {
       .scrolly {
         display: grid;
         grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
