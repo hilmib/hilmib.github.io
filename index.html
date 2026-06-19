@@ -166,8 +166,10 @@
       }
     }
 
-    /* True small or tall-portrait layouts read as a single text column. */
-    @media (max-width: 639px), (max-width: 1023px) and (max-aspect-ratio: 1/1) {
+    /* True small, tall-portrait, or shallow phone-landscape layouts read as a single text column. */
+    @media (max-width: 639px),
+      (max-width: 1023px) and (max-aspect-ratio: 1/1),
+      (max-width: 1023px) and (max-height: 479px) {
       .scrolly__stage { display: none; }
       .rotate-hint { display: flex; margin: 0 0 1.75rem; }
       .scrolly__narrative { padding: 0 1.5rem; }
@@ -182,7 +184,7 @@
 
     /* Below desktop, keep the specimen on the side when there is enough width
        and the viewport is not a tall phone portrait. */
-    @media (min-width: 640px) and (max-width: 1023px) and (min-aspect-ratio: 1/1) {
+    @media (min-width: 640px) and (max-width: 1023px) and (min-height: 480px) and (min-aspect-ratio: 1/1) {
       .scrolly {
         display: grid;
         grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
@@ -211,7 +213,7 @@
       #hero .specimen-scroll-cue { margin-top: 1.35rem; }
     }
 
-    @media (min-width: 640px) and (max-width: 759px) and (min-aspect-ratio: 1/1) {
+    @media (min-width: 640px) and (max-width: 759px) and (min-height: 480px) and (min-aspect-ratio: 1/1) {
       .scrolly {
         grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.15fr);
         column-gap: 0.75rem;
