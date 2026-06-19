@@ -187,12 +187,11 @@
       var max = document.documentElement.scrollHeight - window.innerHeight;
       targetProgress = max > 0 ? clamp01(window.scrollY / max) : 0;
     } else {
-      // On the mobile stacked layout the sticky stage occupies the top of
-      // the viewport, so track a point lower down where the active step's
-      // text actually sits; on any side-by-side layout the columns share
-      // the centre.
+      // On side-by-side layouts, sample near the hero step's initial center
+      // so the specimen stays undeformed at page top; on stacked layouts,
+      // track lower down where the active step's text actually sits.
       var sideBySide = isSideBySide();
-      var focusFrac = sideBySide ? 0.5 : 0.72;
+      var focusFrac = sideBySide ? 0.45 : 0.72;
       var focus = window.scrollY + window.innerHeight * focusFrac;
       var prevC = null, prevS = 0, strain = null;
       for (var i = 0; i < stepEls.length; i++) {
