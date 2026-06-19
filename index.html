@@ -133,6 +133,8 @@
       width: 32px; height: 32px; color: #2563eb; transform-origin: 50% 50%;
       animation: rotate-hint-rock 2.4s ease-in-out infinite;
     }
+    .rotate-hint__short-copy,
+    .rotate-hint__icon--short { display: none; }
     .rotate-hint p { margin: 0; font-size: 0.9rem; line-height: 1.45; max-width: 20rem; }
     .rotate-hint__label { display: block; font-weight: 600; color: #334155; margin-bottom: 0.15rem; }
     html.dark .rotate-hint__label { color: #e2e8f0; }
@@ -140,6 +142,14 @@
       0%, 18% { transform: rotate(-12deg); }
       50%, 68% { transform: rotate(78deg); }
       100% { transform: rotate(-12deg); }
+    }
+
+    @media (max-width: 1023px) and (max-height: 479px) and (min-aspect-ratio: 1/1) {
+      .rotate-hint__portrait-copy,
+      .rotate-hint__icon--portrait { display: none; }
+      .rotate-hint__short-copy,
+      .rotate-hint__icon--short { display: block; }
+      .rotate-hint__icon--short { animation: none; transform: none; }
     }
 
     /* Backdrop turned off → reclaim the stage column */
@@ -166,10 +176,9 @@
       }
     }
 
-    /* True small, tall-portrait, or shallow phone-landscape layouts read as a single text column. */
+    /* True small or tall-portrait layouts read as a single text column. */
     @media (max-width: 639px),
-      (max-width: 1023px) and (max-aspect-ratio: 1/1),
-      (max-width: 1023px) and (max-height: 479px) {
+      (max-width: 1023px) and (max-aspect-ratio: 1/1) {
       .scrolly__stage { display: none; }
       .rotate-hint { display: flex; margin: 0 0 1.75rem; }
       .scrolly__narrative { padding: 0 1.5rem; }
@@ -182,9 +191,34 @@
       .step:first-child { padding-top: 1.5rem; }
     }
 
+    @media (max-width: 1023px) and (max-height: 479px) and (min-aspect-ratio: 1/1) {
+      .rotate-hint {
+        flex-direction: row;
+        gap: 0.7rem;
+        text-align: left;
+        padding: 0.8rem 1rem;
+        margin-bottom: 0.75rem;
+        border-radius: 1rem;
+      }
+      .rotate-hint__icon { width: 24px; height: 24px; flex: 0 0 auto; }
+      .rotate-hint p { font-size: 0.84rem; line-height: 1.35; max-width: none; }
+      .rotate-hint__label { margin-bottom: 0.05rem; }
+      .step {
+        padding: 1.1rem 0 2rem;
+      }
+      .step:first-child { padding-top: 0.7rem; }
+      #hero .step__inner > p:first-child { font-size: 0.76rem; margin-bottom: 0.4rem; }
+      #hero h1 { font-size: 2.25rem; line-height: 1.05; margin-bottom: 0.55rem; }
+      #hero .step__inner > .text-xl { font-size: 1rem; line-height: 1.25; margin-bottom: 0.6rem; }
+      #hero .step__inner > .text-base { font-size: 0.86rem; line-height: 1.4; margin-bottom: 0.9rem; }
+      #hero .step__inner > .flex { gap: 0.5rem; }
+      #hero .step__inner > .flex a { padding: 0.5rem 0.85rem; font-size: 0.78rem; }
+      #hero .step__inner > .flex i { width: 0.875rem; height: 0.875rem; }
+    }
+
     /* Below desktop, keep the specimen on the side when there is enough width
        and the viewport is not a tall phone portrait. */
-    @media (min-width: 640px) and (max-width: 1023px) and (min-height: 480px) and (min-aspect-ratio: 1/1) {
+    @media (min-width: 640px) and (max-width: 1023px) and (min-aspect-ratio: 1/1) {
       .scrolly {
         display: grid;
         grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
@@ -213,7 +247,7 @@
       #hero .specimen-scroll-cue { margin-top: 1.35rem; }
     }
 
-    @media (min-width: 640px) and (max-width: 759px) and (min-height: 480px) and (min-aspect-ratio: 1/1) {
+    @media (min-width: 640px) and (max-width: 759px) and (min-aspect-ratio: 1/1) {
       .scrolly {
         grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.15fr);
         column-gap: 0.75rem;
@@ -231,6 +265,37 @@
       #hero .step__inner > .flex { gap: 0.5rem; }
       #hero .step__inner > .flex a { padding: 0.5rem 0.8rem; font-size: 0.78rem; }
       #hero .step__inner > .flex i { width: 0.875rem; height: 0.875rem; }
+      #hero .specimen-scroll-cue { display: none; }
+    }
+
+    @media (min-width: 640px) and (max-width: 1023px) and (max-height: 479px) and (min-aspect-ratio: 1/1) {
+      .scrolly {
+        grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.1fr);
+        column-gap: 0.75rem;
+      }
+      .scrolly__stage {
+        height: calc(100vh - var(--header-h));
+        height: calc(100svh - var(--header-h));
+        padding: 0.35rem 0.35rem 0.35rem 0;
+      }
+      .stage-frame {
+        height: calc(100vh - var(--header-h) - 0.7rem);
+        height: calc(100svh - var(--header-h) - 0.7rem);
+        max-height: calc(100vh - var(--header-h) - 0.7rem);
+        max-height: calc(100svh - var(--header-h) - 0.7rem);
+      }
+      .scrolly__narrative { padding-left: 0.35rem; }
+      .step {
+        min-height: calc(100vh - var(--header-h));
+        min-height: calc(100svh - var(--header-h));
+      }
+      #hero .step__inner > p:first-child { font-size: 0.72rem; margin-bottom: 0.35rem; }
+      #hero h1 { font-size: 1.8rem; line-height: 1.05; margin-bottom: 0.45rem; }
+      #hero .step__inner > .text-xl { font-size: 0.95rem; line-height: 1.2; margin-bottom: 0.5rem; }
+      #hero .step__inner > .text-base { font-size: 0.82rem; line-height: 1.35; margin-bottom: 0.75rem; }
+      #hero .step__inner > .flex { gap: 0.45rem; }
+      #hero .step__inner > .flex a { padding: 0.45rem 0.75rem; font-size: 0.76rem; }
+      #hero .step__inner > .flex i { width: 0.825rem; height: 0.825rem; }
       #hero .specimen-scroll-cue { display: none; }
     }
 
@@ -303,8 +368,10 @@
         <!-- Shown only on touch devices held in portrait (see CSS): the
              side-by-side specimen view can't fit, so prompt to rotate. -->
         <div class="rotate-hint" role="note">
-          <i data-lucide="rotate-cw" class="rotate-hint__icon"></i>
-          <p><span class="rotate-hint__label">Rotate your device</span>to view interactive animation.</p>
+          <i data-lucide="rotate-cw" class="rotate-hint__icon rotate-hint__icon--portrait"></i>
+          <i data-lucide="maximize-2" class="rotate-hint__icon rotate-hint__icon--short"></i>
+          <p class="rotate-hint__portrait-copy"><span class="rotate-hint__label">Rotate your device</span> to view interactive animation.</p>
+          <p class="rotate-hint__short-copy"><span class="rotate-hint__label">Screen is too short</span> Use a taller screen to view interactive animation.</p>
         </div>
 
         <!-- Hero -->
