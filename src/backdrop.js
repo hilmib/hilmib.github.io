@@ -302,6 +302,7 @@
       mesh: dark ? 'rgba(148,163,184,0.24)' : 'rgba(120,113,108,0.28)',
       line: dark ? 'rgba(203,213,225,0.58)' : 'rgba(71,85,105,0.56)',
       grid: dark ? 'rgba(148,163,184,0.32)' : 'rgba(71,85,105,0.28)',
+      axis: dark ? 'rgba(226,232,240,0.68)' : 'rgba(71,85,105,0.28)',
       platen: dark ? 'rgba(203,213,225,0.56)' : 'rgba(71,85,105,0.50)',
       axial: dark ? 'rgba(96,165,250,0.88)' : 'rgba(37,99,235,0.76)',
       confine: dark ? 'rgba(52,211,153,0.82)' : 'rgba(5,150,105,0.70)',
@@ -359,9 +360,9 @@
   function demPalette() {
     var dark = isDark();
     return {
-      floor: dark ? 'rgba(148,163,184,0.18)' : 'rgba(100,116,139,0.20)',
-      shadowCore: dark ? 'rgba(0,0,0,0.18)' : 'rgba(15,23,42,0.07)',
-      shadowFade: dark ? 'rgba(0,0,0,0)' : 'rgba(15,23,42,0)',
+      floor: dark ? 'rgba(226,232,240,0.58)' : 'rgba(100,116,139,0.20)',
+      shadowCore: dark ? 'rgba(226,232,240,0.22)' : 'rgba(15,23,42,0.07)',
+      shadowFade: dark ? 'rgba(226,232,240,0)' : 'rgba(15,23,42,0)',
       stroke: dark ? 'rgba(15,23,42,0.48)' : 'rgba(68,64,60,0.54)',
       mark: dark ? 'rgba(15,23,42,0.42)' : 'rgba(41,37,36,0.38)',
       grains: dark
@@ -953,7 +954,7 @@
     ctx.globalAlpha = narrow ? 0.72 : 0.96;
 
     // axes (left = q, bottom = εa)
-    ctx.strokeStyle = p.grid;
+    ctx.strokeStyle = p.axis;
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(bx, by);
