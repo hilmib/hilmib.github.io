@@ -8,12 +8,14 @@
  *     prismatic sample, laterally confined by σ₃, that bulges under the
  *     axial load σ₁ and localizes into a single shear band at the
  *     Mohr–Coulomb failure angle (45° + phi/2).
+ *   - "dem": a scroll-driven granular slope collapse, drawn with the same
+ *     canvas frame as the biaxial centerpiece.
  *
  * Design goals: legible behind text, respectful of prefers-reduced-motion,
  * and cheap on mobile (capped DPR, paused when the tab is hidden).
  *
  * Public API (window.Backdrop): { setMode(mode), getMode() }
- *   mode ∈ { 'off', 'biaxial', 'dem' }  ('dem' reserved for Phase 2)
+ *   mode ∈ { 'off', 'biaxial', 'dem' }
  */
 (function () {
   'use strict';
@@ -45,6 +47,7 @@
     try {
       var m = localStorage.getItem(STORAGE_KEY);
       if (m === 'triaxial') m = 'biaxial'; // migrate legacy stored value
+      if (m !== 'off' && m !== 'biaxial' && m !== 'dem') m = 'biaxial';
       return m || 'biaxial';
     } catch (e) {
       return 'biaxial';
@@ -214,7 +217,8 @@
   function render() {
     ctx.clearRect(0, 0, W, H);
     if (mode === 'biaxial') drawBiaxial();
-    // 'dem' renderer arrives in Phase 2; 'off' clears only.
+    else if (mode === 'dem') drawDEMSlope();
+    // 'off' clears only.
   }
 
   // ── Animation loop ──
@@ -251,6 +255,14 @@
   }
   function clamp01(x) {
     return x < 0 ? 0 : x > 1 ? 1 : x;
+  }
+  function smoothstep(edge0, edge1, x) {
+    var u = clamp01((x - edge0) / Math.max(0.0001, edge1 - edge0));
+    return u * u * (3 - 2 * u);
+  }
+  function seededRand(seed) {
+    var s = Math.sin(seed * 127.1 + 311.7) * 43758.5453123;
+    return s - Math.floor(s);
   }
   function roundRect(x, y, w, h, r) {
     if (ctx.roundRect) {
@@ -331,6 +343,251 @@
       },
       pedestal: dark ? 'rgba(51,65,85,0.95)' : 'rgba(71,85,105,0.92)'
     };
+  }
+
+  var DEM_REF_W = 700;
+  var DEM_REF_H = 420;
+  var DEM_FLOOR_LEFT = -90;
+  var DEM_X_RIGHT = 658;
+  var DEM_Y_FLOOR = 378;
+  var DEM_Y_CEILING = 28;
+  var DEM_WEDGE_START_X = 352;
+  var DEM_WEDGE_TOP_Y = 48;
+  var DEM_MAX_FRAME = 185;
+  var demState = null;
+
+  function demPalette() {
+    var dark = isDark();
+    return {
+      wall: dark ? 'rgba(203,213,225,0.42)' : 'rgba(30,41,59,0.46)',
+      stroke: dark ? 'rgba(15,23,42,0.48)' : 'rgba(68,64,60,0.54)',
+      mark: dark ? 'rgba(15,23,42,0.42)' : 'rgba(41,37,36,0.38)',
+      grains: dark
+        ? ['rgba(245,158,11,0.72)', 'rgba(217,119,6,0.70)', 'rgba(180,83,9,0.68)', 'rgba(254,243,199,0.70)', 'rgba(214,211,209,0.64)']
+        : ['rgba(217,119,6,0.52)', 'rgba(180,83,9,0.50)', 'rgba(146,64,14,0.46)', 'rgba(245,222,179,0.56)', 'rgba(168,162,158,0.48)']
+    };
+  }
+
+  function demSceneBox() {
+    var ratio = DEM_REF_W / DEM_REF_H;
+    var sceneW = Math.min(W * 0.90, H * 0.78 * ratio);
+    var sceneH = sceneW / ratio;
+    if (sceneH > H * 0.76) {
+      sceneH = H * 0.76;
+      sceneW = sceneH * ratio;
+    }
+    return {
+      x: (W - sceneW) * 0.5,
+      y: (H - sceneH) * 0.5 + H * 0.02,
+      w: sceneW,
+      h: sceneH,
+      scale: sceneW / DEM_REF_W
+    };
+  }
+
+  function demX(scene, x) { return scene.x + x * scene.scale; }
+  function demY(scene, y) { return scene.y + y * scene.scale; }
+
+  function makeDemParticles() {
+    var particles = [];
+    var radius = 9.6;
+    var dx = radius * 2.04;
+    var dy = radius * 1.77;
+    var slope = (DEM_Y_FLOOR - DEM_WEDGE_TOP_Y) / (DEM_X_RIGHT - DEM_WEDGE_START_X);
+    var id = 1;
+
+    for (var rowIndex = 0; rowIndex < 23; rowIndex++) {
+      var y = DEM_Y_FLOOR - radius - rowIndex * dy;
+      var stagger = rowIndex % 2 ? radius : 0;
+      for (var x = DEM_WEDGE_START_X + radius + stagger; x < DEM_X_RIGHT - radius; x += dx) {
+        var limitY = DEM_Y_FLOOR - slope * (x - DEM_WEDGE_START_X);
+        if (y < limitY && rowIndex !== 0) continue;
+        var seed = id * 13.7;
+        particles.push({
+          id: id,
+          x: x,
+          y: y,
+          px: x,
+          py: y,
+          vx: 0,
+          vy: 0,
+          radius: radius * (0.90 + seededRand(seed) * 0.18),
+          angle: seededRand(seed + 4.1) * Math.PI * 2,
+          colorIndex: Math.floor(seededRand(seed + 8.2) * 5),
+          fixed: false
+        });
+        id++;
+      }
+    }
+    return particles;
+  }
+
+  function cloneDemFrame(particles) {
+    var frame = [];
+    for (var i = 0; i < particles.length; i++) {
+      frame.push({ x: particles[i].x, y: particles[i].y, angle: particles[i].angle });
+    }
+    return frame;
+  }
+
+  function createDemState() {
+    var particles = makeDemParticles();
+    return { particles: particles, history: [cloneDemFrame(particles)] };
+  }
+
+  function runDemPhysicsStep(particles, frameIndex) {
+    var substeps = 5;
+    var release = smoothstep(0, 48, frameIndex);
+    var settle = smoothstep(72, DEM_MAX_FRAME, frameIndex);
+    for (var substep = 0; substep < substeps; substep++) {
+      for (var i = 0; i < particles.length; i++) {
+        var p = particles[i];
+        if (p.fixed) continue;
+        p.px = p.x;
+        p.py = p.y;
+        var heightFrac = clamp01((DEM_Y_FLOOR - p.y) / (DEM_Y_FLOOR - DEM_WEDGE_TOP_Y));
+        var freeFace = clamp01((DEM_X_RIGHT - p.x) / (DEM_X_RIGHT - DEM_WEDGE_START_X));
+        p.vy += 0.16;
+        p.vx -= release * (0.0006 + 0.0045 * heightFrac) * freeFace;
+        p.x += p.vx;
+        p.y += p.vy;
+      }
+
+      for (var aIndex = 0; aIndex < particles.length; aIndex++) {
+        var a = particles[aIndex];
+        for (var bIndex = aIndex + 1; bIndex < particles.length; bIndex++) {
+          var b = particles[bIndex];
+          var dx = b.x - a.x;
+          var dy = b.y - a.y;
+          var minDist = a.radius + b.radius;
+          var distSq = dx * dx + dy * dy;
+          if (distSq >= minDist * minDist) continue;
+
+          var dist = Math.sqrt(distSq) || 0.001;
+          var overlap = (minDist - dist) * 0.78;
+          var nx = dx / dist;
+          var ny = dy / dist;
+          var aw = a.fixed ? 0 : 1;
+          var bw = b.fixed ? 0 : 1;
+          var totalWeight = aw + bw;
+          if (totalWeight <= 0) continue;
+
+          if (aw) {
+            a.x -= nx * overlap * (aw / totalWeight);
+            a.y -= ny * overlap * (aw / totalWeight);
+          }
+          if (bw) {
+            b.x += nx * overlap * (bw / totalWeight);
+            b.y += ny * overlap * (bw / totalWeight);
+          }
+
+          var tangent = (b.vx - a.vx) * -ny + (b.vy - a.vy) * nx;
+          var frictionMove = Math.max(-minDist * 0.14, Math.min(minDist * 0.14, tangent * 0.58));
+          var tx = -ny;
+          var ty = nx;
+          if (aw) {
+            a.x += tx * frictionMove * (aw / totalWeight);
+            a.y += ty * frictionMove * (aw / totalWeight);
+          }
+          if (bw) {
+            b.x -= tx * frictionMove * (bw / totalWeight);
+            b.y -= ty * frictionMove * (bw / totalWeight);
+          }
+          if (!a.fixed) a.angle += tangent * 0.010;
+          if (!b.fixed) b.angle -= tangent * 0.010;
+        }
+      }
+
+      for (var j = 0; j < particles.length; j++) {
+        var q = particles[j];
+        if (q.fixed) continue;
+        if (q.y + q.radius > DEM_Y_FLOOR) {
+          q.y = DEM_Y_FLOOR - q.radius;
+          q.vy = 0;
+          q.vx *= 0.34 - 0.08 * settle;
+          if (Math.abs(q.vx) < 0.18) q.vx = 0;
+          q.angle += q.vx * 0.025;
+        }
+        if (q.x + q.radius > DEM_X_RIGHT) {
+          q.x = DEM_X_RIGHT - q.radius;
+          q.vx = Math.min(0, q.vx) * 0.02;
+          q.vy *= 0.48;
+        }
+      }
+
+      for (var k = 0; k < particles.length; k++) {
+        var grain = particles[k];
+        if (grain.fixed) continue;
+        grain.vx = (grain.x - grain.px) * (0.90 - 0.08 * settle);
+        grain.vy = (grain.y - grain.py) * 0.94;
+      }
+    }
+  }
+
+  function getDemFrame(frameIndex) {
+    if (!demState) demState = createDemState();
+    var target = Math.max(0, Math.min(DEM_MAX_FRAME, frameIndex));
+    while (demState.history.length <= target) {
+      runDemPhysicsStep(demState.particles, demState.history.length);
+      demState.history.push(cloneDemFrame(demState.particles));
+    }
+    return demState.history[target];
+  }
+
+  function drawDemParticle(scene, particle, frame, palette, alpha) {
+    var x = demX(scene, frame.x);
+    var y = demY(scene, frame.y);
+    var r = particle.radius * scene.scale;
+    ctx.save();
+    ctx.globalAlpha *= alpha;
+    ctx.translate(x, y);
+    ctx.rotate(frame.angle);
+    ctx.fillStyle = palette.grains[particle.colorIndex % palette.grains.length];
+    ctx.strokeStyle = palette.stroke;
+    ctx.lineWidth = Math.max(0.8, r * 0.12);
+    ctx.beginPath();
+    ctx.arc(0, 0, r, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+    ctx.strokeStyle = palette.mark;
+    ctx.lineWidth = Math.max(0.7, r * 0.11);
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.lineTo(r * 0.72, 0);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  // ── DEM slope renderer ──
+  // The scroll position scrubs a cached PBD timeline: frame 0 is the packed
+  // triangular slope, later frames are generated by gravity/contact resolution.
+  function drawDEMSlope() {
+    var p = demPalette();
+    var scene = demSceneBox();
+    var collapse = smoothstep(0.03, 0.96, progress);
+    var frameIndex = Math.round(collapse * DEM_MAX_FRAME);
+    var frame = getDemFrame(frameIndex);
+    var particles = demState.particles;
+    var sx = scene.scale;
+
+    ctx.save();
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.globalAlpha = W < 560 ? 0.82 : 0.94;
+
+    ctx.strokeStyle = p.wall;
+    ctx.lineWidth = Math.max(1.4, sx * 4.2);
+    ctx.beginPath();
+    ctx.moveTo(demX(scene, DEM_FLOOR_LEFT), demY(scene, DEM_Y_FLOOR));
+    ctx.lineTo(demX(scene, DEM_X_RIGHT), demY(scene, DEM_Y_FLOOR));
+    ctx.lineTo(demX(scene, DEM_X_RIGHT), demY(scene, DEM_Y_CEILING));
+    ctx.stroke();
+
+    ctx.globalAlpha = W < 560 ? 0.84 : 0.96;
+    for (var particleIndex = 0; particleIndex < particles.length; particleIndex++) {
+      drawDemParticle(scene, particles[particleIndex], frame[particleIndex], p, particles[particleIndex].fixed ? 0.70 : 1);
+    }
+    ctx.restore();
   }
 
   // ── Biaxial (plane-strain) renderer (deformable FE-style mesh) ──
