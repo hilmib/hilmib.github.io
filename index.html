@@ -61,12 +61,17 @@
     .opt-active i { color: #fff; }
 
     #header {
-      background-color: rgba(255, 255, 255, 0.88);
-      border-color: rgba(203, 213, 225, 0.72);
+      display: contents;
     }
-    html.dark #header {
-      background-color: rgba(13, 22, 38, 0.88);
-      border-color: rgba(71, 85, 105, 0.72);
+    #header .header-shell {
+      position: fixed;
+      top: 0.9rem;
+      right: max(0.75rem, calc((100vw - 80rem) / 2 + 1.5rem));
+      z-index: 50;
+      pointer-events: none;
+    }
+    #header .header-cluster {
+      pointer-events: auto;
     }
     #projects .group {
       border-color: rgba(203, 213, 225, 0.95);
@@ -78,7 +83,7 @@
     }
 
     /* ─── Scrollytelling: sticky stage + narrative steps ─── */
-    :root { --header-h: 3.5rem; }
+    :root { --header-h: 0rem; }
     .scrolly-wrap { padding-top: var(--header-h); }
     .scrolly__stage {
       position: sticky;
@@ -229,9 +234,15 @@
     /* True small or tall-portrait layouts read as a single text column. */
     @media (max-width: 599px),
       (max-width: 1023px) and (max-aspect-ratio: 1/1) {
+      #header .header-shell {
+        right: 0.75rem;
+        left: auto;
+        transform: none;
+      }
+      .mode-switch { display: none; }
       .scrolly__stage { display: none; }
       .rotate-hint { display: flex; margin: 0 0 1.75rem; }
-      .scrolly__narrative { padding: 0 1.5rem; }
+      .scrolly__narrative { padding: clamp(1rem, 4vh, 1.75rem) 1.5rem 0; }
       .step {
         min-height: auto;
         padding: clamp(3rem, 10vh, 5rem) 0;
@@ -247,9 +258,10 @@
         gap: 0.7rem;
         text-align: left;
         padding: 0.8rem 1rem;
-        margin-bottom: 0.75rem;
+        margin: 0 0 0.75rem;
         border-radius: 1rem;
       }
+      .scrolly__narrative { padding-top: clamp(0.6rem, 3vh, 1rem); }
       .rotate-hint__icon { width: 24px; height: 24px; flex: 0 0 auto; }
       .rotate-hint p { font-size: 0.84rem; line-height: 1.35; max-width: none; }
       .rotate-hint__label { margin-bottom: 0.05rem; }
@@ -358,16 +370,9 @@
 <body class="text-slate-900 dark:text-slate-100 font-sans antialiased">
 
   <!-- ─── Header ─── -->
-  <header id="header" class="fixed top-0 inset-x-0 z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200/60 dark:border-slate-700/60">
-    <div class="max-w-5xl mx-auto flex items-center justify-between px-6 h-14">
-      <a href="#hero" class="flex items-center gap-2.5 group">
-        <span class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white font-bold text-sm select-none">H</span>
-        <span class="font-semibold text-sm tracking-tight hidden sm:inline">Hilmi Bayraktaroglu</span>
-      </a>
-      <nav class="flex items-center gap-1">
-        <a href="#projects" class="px-2.5 sm:px-3 py-1.5 text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary rounded-lg transition-colors duration-200">Projects</a>
-        <a href="#contact" class="px-2.5 sm:px-3 py-1.5 text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary rounded-lg transition-colors duration-200">Contact</a>
-
+  <header id="header">
+    <div class="header-shell flex items-center">
+      <div class="header-cluster flex items-center gap-1" aria-label="Page controls">
         <div class="mode-switch" role="group" aria-label="Animation mode">
           <button type="button" data-stage-mode="biaxial" class="mode-opt" aria-pressed="false" aria-label="Biaxial test" title="Biaxial test">
             <span>Biaxial</span>
@@ -400,7 +405,7 @@
             </div>
           </div>
         </div>
-      </nav>
+      </div>
     </div>
   </header>
 
