@@ -68,7 +68,7 @@
     if (document.body.classList.contains('stage-hidden')) return false;
     if (typeof matchMedia !== 'function') return false;
     return matchMedia('(min-width: 1024px)').matches ||
-      matchMedia('(min-width: 760px) and (max-width: 1023px) and (min-aspect-ratio: 1/1)').matches;
+      matchMedia('(min-width: 640px) and (max-width: 1023px) and (min-aspect-ratio: 1/1)').matches;
   }
 
   function isDesktopSplit() {

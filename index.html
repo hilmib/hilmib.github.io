@@ -167,7 +167,7 @@
     }
 
     /* True small or tall-portrait layouts read as a single text column. */
-    @media (max-width: 759px), (max-width: 1023px) and (max-aspect-ratio: 1/1) {
+    @media (max-width: 639px), (max-width: 1023px) and (max-aspect-ratio: 1/1) {
       .scrolly__stage { display: none; }
       .rotate-hint { display: flex; margin: 0 0 1.75rem; }
       .scrolly__narrative { padding: 0 1.5rem; }
@@ -182,7 +182,7 @@
 
     /* Below desktop, keep the specimen on the side when there is enough width
        and the viewport is not a tall phone portrait. */
-    @media (min-width: 760px) and (max-width: 1023px) and (min-aspect-ratio: 1/1) {
+    @media (min-width: 640px) and (max-width: 1023px) and (min-aspect-ratio: 1/1) {
       .scrolly {
         display: grid;
         grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
@@ -209,6 +209,27 @@
       #hero .step__inner > .text-xl { font-size: clamp(1.12rem, 2.8vw, 1.3rem); line-height: 1.25; margin-bottom: 0.85rem; }
       #hero .step__inner > .text-base { font-size: clamp(0.95rem, 2vw, 1.05rem); line-height: 1.5; margin-bottom: 1.35rem; }
       #hero .specimen-scroll-cue { margin-top: 1.35rem; }
+    }
+
+    @media (min-width: 640px) and (max-width: 759px) and (min-aspect-ratio: 1/1) {
+      .scrolly {
+        grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.15fr);
+        column-gap: 0.75rem;
+      }
+      .scrolly__stage { padding: 0.4rem 0.35rem 0.4rem 0; }
+      .scrolly__narrative { padding-left: 0.35rem; }
+      .step {
+        min-height: calc(100vh - var(--header-h));
+        min-height: calc(100dvh - var(--header-h));
+      }
+      #hero .step__inner > p:first-child { font-size: 0.72rem; margin-bottom: 0.35rem; }
+      #hero h1 { font-size: 1.85rem; line-height: 1.05; margin-bottom: 0.45rem; }
+      #hero .step__inner > .text-xl { font-size: 0.98rem; line-height: 1.22; margin-bottom: 0.55rem; }
+      #hero .step__inner > .text-base { font-size: 0.84rem; line-height: 1.38; margin-bottom: 0.85rem; }
+      #hero .step__inner > .flex { gap: 0.5rem; }
+      #hero .step__inner > .flex a { padding: 0.5rem 0.8rem; font-size: 0.78rem; }
+      #hero .step__inner > .flex i { width: 0.875rem; height: 0.875rem; }
+      #hero .specimen-scroll-cue { display: none; }
     }
 
     @media (prefers-reduced-motion: reduce) {
