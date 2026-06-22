@@ -520,6 +520,7 @@
       for (var k = 0; k < particles.length; k++) {
         var grain = particles[k];
         if (grain.fixed) continue;
+        grain.angle += (grain.x - grain.px) / Math.max(1, grain.radius) * 0.72;
         grain.vx = (grain.x - grain.px) * (0.90 - 0.08 * settle);
         grain.vy = (grain.y - grain.py) * 0.94;
       }
